@@ -10,7 +10,7 @@ public class Rol {
 
     public Rol(int rolID, String nombreRol) {
         this.rolID = rolID;
-        this.nombreRol = nombreRol;
+        this.setNombreRol(nombreRol);
     }
 
     public int getRolID() {
@@ -25,7 +25,23 @@ public class Rol {
         return nombreRol;
     }
 
+    /**
+     * Valida y establece el nombre del rol.
+     * La validación integrada asegura que el nombre no sea nulo, vacío, ni exceda los 50 caracteres.
+     */
+
     public void setNombreRol(String nombreRol) {
-        this.nombreRol = nombreRol;
+
+        if (nombreRol == null || nombreRol.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del rol es obligatorio.");
+        }
+
+        String nombreLimpio = nombreRol.trim();
+
+        if (nombreLimpio.length() > 50) {
+            throw new IllegalArgumentException("El nombre del rol no puede exceder los 50 caracteres.");
+        }
+
+        this.nombreRol = nombreLimpio;
     }
 }

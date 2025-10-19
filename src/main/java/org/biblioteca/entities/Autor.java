@@ -24,11 +24,12 @@ public class Autor {
         this.nacionalidad = nacionalidad;
     }
 
-    // Constructor para REGISTRAR un nuevo autor
+    // Constructor para REGISTRAR un nuevo autor (Debe usar setters para validar)
     public Autor(String nombre, String apellido, String nacionalidad) {
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.nacionalidad = nacionalidad;
+        // Al registrar, usamos los setters para activar las validaciones
+        this.setNombre(nombre);
+        this.setApellido(apellido);
+        this.setNacionalidad(nacionalidad);
     }
 
     public int getAutorID() {
@@ -43,31 +44,74 @@ public class Autor {
         return nombre;
     }
 
+    /**
+     * Valida y establece el nombre del autor. (NOT NULL y Límite Realista de 60)
+     */
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El Nombre del Autor es obligatorio.");
+        }
+
+        String nombreLimpio = nombre.trim();
+        final int MAX_LENGHT = 60;
+
+        if (nombreLimpio.length() > MAX_LENGHT) {
+            throw new IllegalArgumentException("El Nombre no puede exceder los " + MAX_LENGHT + " caracteres.");
+        }
+
+        this.nombre = nombreLimpio;
     }
 
     public String getApellido() {
         return apellido;
     }
 
+    /**
+     * Valida y establece el apellido del autor. (NOT NULL y Límite Realista de 60)
+     */
     public void setApellido(String apellido) {
-        this.apellido = apellido;
+        if (apellido == null || apellido.trim().isEmpty()) {
+            throw new IllegalArgumentException("El Apellido del Autor es obligatorio.");
+        }
+
+        String apellidoLimpio = apellido.trim();
+        final int MAX_LENGHT = 60;
+
+        if (apellidoLimpio.length() > MAX_LENGHT) {
+            throw new IllegalArgumentException("El Apellido no puede exceder los " + MAX_LENGHT + " caracteres.");
+        }
+
+        this.apellido = apellidoLimpio;
     }
 
     public String getNacionalidad() {
         return nacionalidad;
     }
 
+    /**
+     * Establece la nacionalidad. (Opcional y Límite Realista de 30)
+     */
     public void setNacionalidad(String nacionalidad) {
-        this.nacionalidad = nacionalidad;
+        if (nacionalidad != null && !nacionalidad.trim().isEmpty()) {
+            String nacionalidadLimpia = nacionalidad.trim();
+            final int MAX_LENGHT = 30;
+
+            if (nacionalidadLimpia.length() > MAX_LENGHT) {
+                throw new IllegalArgumentException("La Nacionalidad no puede exceder los " + MAX_LENGHT + " caracteres.");
+            }
+            this.nacionalidad = nacionalidadLimpia;
+        } else {
+            this.nacionalidad = null;
+        }
     }
 
     public List<LibroAutor> getLibrosAsociados() {
+
         return librosAsociados;
     }
 
     public void setLibrosAsociados(List<LibroAutor> librosAsociados) {
+
         this.librosAsociados = librosAsociados;
     }
 }

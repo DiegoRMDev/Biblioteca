@@ -23,12 +23,12 @@ public class Trabajador {
         this.fechaRegistro = fechaRegistro;
     }
 
-    // Constructor para REGISTRAR un nuevo trabajador
+    // Constructor para REGISTRAR un nuevo trabajador (Debe usar setters para validar)
     public Trabajador(String nombre, String usuarioLogin, String contrasena, int rolID) {
-        this.nombre = nombre;
-        this.usuarioLogin = usuarioLogin;
-        this.contrasena = contrasena;
-        this.rolID = rolID;
+        this.setNombre(nombre);
+        this.setUsuarioLogin(usuarioLogin);
+        this.setContrasena(contrasena);
+        this.setRolID(rolID);
     }
 
     public int getTrabajadorID() {
@@ -43,8 +43,21 @@ public class Trabajador {
         return nombre;
     }
 
+    /**
+     * Valida y establece el nombre. (NOT NULL y NVARCHAR(100))
+     */
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del trabajador es obligatorio.");
+        }
+
+        String nombreLimpio = nombre.trim();
+
+        if (nombreLimpio.length() > 100) { // Límite de la BD
+            throw new IllegalArgumentException("El nombre no puede exceder los 100 caracteres.");
+        }
+
+        this.nombre = nombreLimpio;
     }
 
     public String getUsuarioLogin() {
@@ -52,7 +65,22 @@ public class Trabajador {
     }
 
     public void setUsuarioLogin(String usuarioLogin) {
-        this.usuarioLogin = usuarioLogin;
+        if (usuarioLogin == null || usuarioLogin.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de usuario para login es obligatorio.");
+        }
+
+        String usuarioLimpio = usuarioLogin.trim();
+
+        if (usuarioLimpio.length() > 50) { // Límite de la BD
+            throw new IllegalArgumentException("El usuario de login no puede exceder los 50 caracteres.");
+        }
+
+
+        if (!usuarioLimpio.matches("^[a-zA-Z0-9]+$")) {
+        throw new IllegalArgumentException("El usuario solo puede contener letras y números.");
+        }
+
+        this.usuarioLogin = usuarioLimpio;
     }
 
     public String getContrasena() {
@@ -60,17 +88,34 @@ public class Trabajador {
     }
 
     public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+        if (contrasena == null || contrasena.trim().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria.");
+        }
+
+        String contrasenaLimpia = contrasena.trim();
+
+        // Regla de Negocio: Longitud Mínima (Ej: 6 caracteres es un buen mínimo)
+        if (contrasenaLimpia.length() < 6) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres.");
+        }
+
+        this.contrasena = contrasenaLimpia;
     }
 
     public int getRolID() {
         return rolID;
     }
 
+    /**
+     * Valida y establece el ID del Rol. (Debe ser un ID válido)
+     */
     public void setRolID(int rolID) {
+        // Se valida que el ID sea un valor positivo (regla básica para una FK)
+        if (rolID <= 0) {
+            throw new IllegalArgumentException("El ID del Rol es inválido. Debe ser un valor positivo.");
+        }
         this.rolID = rolID;
     }
-
     public Timestamp getFechaRegistro() {
         return fechaRegistro;
     }
