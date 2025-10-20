@@ -18,7 +18,7 @@ public class Libro {
     private int stock;
 
     // Nuevo campo para la relación N:M
-    private List<LibroAutor> autoresAsociados;
+    private List<Autor> autores;
 
     public Libro() {
     }
@@ -240,10 +240,10 @@ public class Libro {
         String cleanEstado = estado.trim();
 
         // Regla de Negocio (replicando el CHECK constraint de la BD)
-        final List<String> ESTADOS_PERMITIDOS = List.of("Disponible", "Prestado", "En Reparacion");
+        final List<String> ESTADOS_PERMITIDOS = List.of("Activo", "Inactivo", "Retirado");
 
         if (!ESTADOS_PERMITIDOS.contains(cleanEstado)) {
-            throw new IllegalArgumentException("El Estado debe ser 'Disponible', 'Prestado' o 'En Reparacion'.");
+            throw new IllegalArgumentException("El Estado debe ser 'Activo', 'Inactivo' o 'Retirado'.");
         }
 
         this.estado = cleanEstado;
@@ -264,11 +264,11 @@ public class Libro {
         this.stock = stock;
     }
 
-    public List<LibroAutor> getAutoresAsociados() {
-        return autoresAsociados;
+    public List<Autor> getAutores() {
+        return autores;
     }
 
-    public void setAutoresAsociados(List<LibroAutor> autoresAsociados) {
-        this.autoresAsociados = autoresAsociados;
+    public void setAutores(List<Autor> autores) {
+        this.autores = autores;
     }
 }

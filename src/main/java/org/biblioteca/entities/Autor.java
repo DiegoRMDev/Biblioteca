@@ -10,7 +10,7 @@ public class Autor {
     private String nacionalidad;
 
     // Nuevo campo para la relación N:M
-    private List<LibroAutor> librosAsociados;
+    private List<Libro>  libros;
 
 
     public Autor() {
@@ -105,13 +105,12 @@ public class Autor {
         }
     }
 
-    public List<LibroAutor> getLibrosAsociados() {
 
-        return librosAsociados;
-    }
+    public List<Libro> getLibros() { return libros; }
+    public void setLibros(List<Libro> libros) { this.libros = libros; }
 
-    public void setLibrosAsociados(List<LibroAutor> librosAsociados) {
-
-        this.librosAsociados = librosAsociados;
+    @Override
+    public String toString() {
+        return this.nombre + " " + this.apellido; // o getNombre() + " " + getApellido();
     }
 }

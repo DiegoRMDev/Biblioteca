@@ -73,4 +73,9 @@ public class Categoria {
             this.descripcion = null; // Permite nulo o vacío
         }
     }
+
+    @Override
+    public String toString() {
+        return this.nombre;
+    }
 }
