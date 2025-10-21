@@ -44,13 +44,18 @@ public class EditorAutor extends JDialog {
         String apellido = txtApellido.getText();
         String nacionalidad = txtNacionalidad.getText();
 
-        // (Aquí podrías añadir validaciones si el campo está vacío)
-
-        if (autorActual == null) {
-            servicio.registrarAutor(nombre, apellido, nacionalidad);
-        } else {
-            servicio.modificarAutor(autorActual.getAutorID(), nombre, apellido, nacionalidad);
+        try {
+            if (autorActual == null) {
+                // Se registra el nuevo autor (Activa validaciones de la entidad)
+                servicio.registrarAutor(nombre, apellido, nacionalidad);
+            } else {
+                // Se modifica el autor existente (Activa validaciones de la entidad)
+                servicio.modificarAutor(autorActual.getAutorID(), nombre, apellido, nacionalidad);
+            }
+            dispose(); // Cierra el diálogo solo si el guardado fue exitoso
+        } catch (IllegalArgumentException ex) {
+            // Capturamos el error de validación y lo mostramos al usuario.
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
         }
-        dispose();
     }
 }

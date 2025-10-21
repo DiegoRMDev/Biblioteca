@@ -72,21 +72,16 @@ public class Libro {
             throw new IllegalArgumentException("El ISBN es obligatorio.");
         }
 
-        String cleanIsbn = isbn.trim().toUpperCase();
+        // 1. Limpia la cadena: elimina guiones y espacios, convierte a mayúsculas
+        String cleanIsbn = isbn.trim().toUpperCase().replace("-", "").replace(" ", "");
 
-        // Validación de formato ISBN-10 o ISBN-13
-        // El formato ISBN permite guiones, espacios y la letra 'X'.
-        // Aquí usamos una Regex que acepta el formato sin guiones o con el estándar más común:
-        final String ISBN_REGEX =
-                "^(?:ISBN(?:-13)?:?\\s)?(?=[0-9X]{10,13}$|(?=(?:[0-9]+[-\\s]){4})[-\\s0-9X]{17}|97[89][0-9]{10}|(?=(?:[0-9]+[-\\s]){3})[-\\s0-9X]{13})(?:97[89][ -]?)?[0-9]{1,5}[ -]?[0-9]+[ -]?[0-9]+[ -]?[0-9X]$";
-
-
-        if (!cleanIsbn.matches("^([0-9]{10}|[0-9]{13})$")) {
-            // Se puede relajar esta regla si la aplicación maneja ISBNs con guiones.
-            throw new IllegalArgumentException("El ISBN debe ser de 10 o 13 dígitos numéricos.");
+        // 2. Valida la longitud final (debe ser 10 o 13 después de la limpieza)
+        if (!cleanIsbn.matches("^([0-9X]{10}|[0-9]{13})$")) {
+            // NOTA: Se incluye la 'X' para ISBN-10 válidos.
+            throw new IllegalArgumentException("El ISBN debe ser de 10 o 13 caracteres (números y opcionalmente 'X').");
         }
 
-        this.isbn = cleanIsbn;
+        this.isbn = cleanIsbn; // Guardamos la versión limpia sin guiones
     }
 
     public String getTitulo() {

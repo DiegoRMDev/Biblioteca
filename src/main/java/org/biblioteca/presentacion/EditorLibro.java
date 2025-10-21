@@ -103,43 +103,59 @@ public class EditorLibro extends JDialog {
     }
 
     private void guardarLibro() {
-        // Recoger datos de los campos
+        // 1. Recoger datos de los campos de texto
         String titulo = txtTitulo.getText();
         String isbn = txtIsbn.getText();
-        String editorial=txtEditorial.getText();
-        Integer anioPub= Integer.valueOf(txtAnioPub.getText());
-        String idioma=txtIdioma.getText();
-        String ubicFisica= txtUbFisc.getText();
-        String rutImg=txtRutImg.getText();
-        String estado=txtEstado.getText();
-        Integer stock=Integer.valueOf(txtStock.getText());
+        String editorial = txtEditorial.getText();
+        String idioma = txtIdioma.getText();
+        String ubicFisica = txtUbFisc.getText();
+        String rutImg = txtRutImg.getText();
+        String estado = txtEstado.getText();
+
+        // Variables para los campos numéricos y objetos
+        Integer anioPub = null;
+        Integer stock = null;
         Categoria categoriaSeleccionada = (Categoria) cboCategoria.getSelectedItem();
         List<Autor> autoresSeleccionados = lstAutores.getSelectedValuesList();
 
         try {
+            // --- 2. Bloque crítico de conversión de tipos ---
+            // Si hay texto o está vacío, lanza NumberFormatException
+            anioPub = Integer.valueOf(txtAnioPub.getText());
+            stock = Integer.valueOf(txtStock.getText());
+            // ------------------------------------------------
+
             Libro libro = new Libro();
-            // Usar los setters que tienen validaciones
+
+            // 3. Usar los setters que tienen validaciones (Puede lanzar IllegalArgumentException)
             libro.setTitulo(titulo);
             libro.setIsbn(isbn);
             libro.setEditorial(editorial);
-            libro.setAnioPublicacion(anioPub);
+            libro.setAnioPublicacion(anioPub); // Ahora usa el Integer ya convertido
             libro.setIdioma(idioma);
             libro.setUbicacionFisica(ubicFisica);
             libro.setRutaImagen(rutImg);
             libro.setEstado(estado);
-            libro.setStock(stock);
-
+            libro.setStock(stock);             // Ahora usa el Integer ya convertido
 
             libro.setCategoriaID(categoriaSeleccionada.getCategoriaID());
 
+            // 4. Llamar al servicio
             if (libroAEditar == null) { // Modo Creación
                 libroService.registrarLibro(libro, autoresSeleccionados);
             } else { // Modo Edición
                 libro.setLibroID(libroAEditar.getLibroID());
                 libroService.modificarLibro(libro, autoresSeleccionados);
             }
-            dispose();
+
+            dispose(); // Cierra si fue exitoso
+
+            // 5. Manejo de excepciones combinado
+        } catch (NumberFormatException ex) {
+            // Captura si el usuario escribió letras o dejó vacíos los campos numéricos
+            JOptionPane.showMessageDialog(this, "Debe ingresar valores numéricos válidos (ej: números enteros) en los campos 'Año de Publicación' y 'Stock'.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {
+            // Captura los errores de validación de la entidad (ej: Título vacío, ISBN inválido, Año futuro)
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
         }
     }
