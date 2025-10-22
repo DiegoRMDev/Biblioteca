@@ -31,8 +31,13 @@ public class LoginUI extends JFrame {
         // 2. Agregar la lógica de eventos
         configurarListeners();
 
-        pack(); // Usa el PreferredSize del ImagePanel (500x350)
-        setLocationRelativeTo(null); // Centrar
+        setupPlaceholders();
+        if (txtContrasena != null) {
+            txtContrasena.setEchoChar((char) 0); // Deshabilita la ocultación
+        }
+
+        pack();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -82,7 +87,7 @@ public class LoginUI extends JFrame {
 
                 // CERRAR LOGIN Y ABRIR VENTANA PRINCIPAL (siguiente paso)
                 dispose();
-                // new VentanaPrincipal().setVisible(true); // <-- Descomentar/Usar en el siguiente paso
+                 new VentanaPrincipal().setVisible(true);
 
             } else {
                 // Login Fallido
@@ -96,6 +101,72 @@ public class LoginUI extends JFrame {
             ex.printStackTrace();
         }
     }
+
+    // Dentro de la clase LoginUI
+    private static final String DEFAULT_USER_TEXT = "Ingrese su usuario";
+    private static final String DEFAULT_PASS_TEXT = "••••••••";
+
+    // Dentro de LoginUI.java
+    private void setupPlaceholders() {
+
+        // --- Configuración para txtUsuario (JTextField) ---
+        txtUsuario.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            // Cuando el campo GANA el foco (el usuario hace clic)
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                // Verifica si el texto actual ES el texto del placeholder
+                if (txtUsuario.getText().equals(DEFAULT_USER_TEXT)) {
+                    txtUsuario.setText(""); // 1. Limpia el texto
+                    txtUsuario.setForeground(Color.BLACK); // 2. Cambia a color de texto normal
+                }
+            }
+
+            // Cuando el campo PIERDE el foco (el usuario hace clic fuera)
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                // Si el campo queda vacío, restauramos el placeholder
+                if (txtUsuario.getText().isEmpty()) {
+                    txtUsuario.setForeground(Color.GRAY); // 1. Restaura el color gris
+                    txtUsuario.setText(DEFAULT_USER_TEXT); // 2. Restaura el texto
+                }
+            }
+        });
+
+        // --- Configuración para txtContrasena (JPasswordField) ---
+        txtContrasena.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            // Cuando el campo GANA el foco
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                String currentText = new String(txtContrasena.getPassword());
+
+                // Verifica si el texto actual ES el texto del placeholder
+                if (currentText.equals(DEFAULT_PASS_TEXT)) {
+                    txtContrasena.setText(""); // 1. Limpia el texto
+                    txtContrasena.setForeground(Color.BLACK); // 2. Cambia a color normal
+                }
+                // 3. Importante: Activa la ocultación de caracteres
+                txtContrasena.setEchoChar('•');
+            }
+
+            // Cuando el campo PIERDE el foco
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                String currentText = new String(txtContrasena.getPassword());
+
+                if (currentText.isEmpty()) {
+                    txtContrasena.setForeground(Color.GRAY); // 1. Restaura el color gris
+                    txtContrasena.setText(DEFAULT_PASS_TEXT); // 2. Restaura el texto
+
+                    // 3. Importante: Desactiva la ocultación para que se vea el placeholder
+                    txtContrasena.setEchoChar((char) 0);
+                }
+            }
+        });
+    }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new LoginUI().setVisible(true));
