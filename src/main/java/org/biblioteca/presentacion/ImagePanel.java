@@ -38,7 +38,7 @@ public class ImagePanel extends JPanel {
             int width = getWidth();
             int height = getHeight();
 
-            // Dibuja la imagen escalada para que cubra todo el panel
+            // Dibuja la imagen escalada para que cubra por completo el panel
             g2d.drawImage(backgroundImage, 0, 0, width, height, this);
             g2d.dispose();
         }
@@ -47,6 +47,6 @@ public class ImagePanel extends JPanel {
     @Override
     public Dimension getPreferredSize() {
         // Define el tamaño inicial de la ventana de login
-        return new Dimension(500, 350);
+        return new Dimension(700, 550);
     }
 }

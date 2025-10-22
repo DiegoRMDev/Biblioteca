@@ -14,9 +14,10 @@ public class LoginUI extends JFrame {
     private JTextField txtUsuario;
     private JPasswordField txtContrasena;
     private JButton btnLogin;
+    private JPanel formContainerPanel;
 
 
-    private static final String BACKGROUND_IMAGE_PATH = "/img/FondoBiblioteca.jpg";
+    private static final String BACKGROUND_IMAGE_PATH = "/img/FondoLogin.jpg";
 
     public LoginUI() {
         this.trabajadorService = new TrabajadorService();
