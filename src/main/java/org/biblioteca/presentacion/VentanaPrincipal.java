@@ -13,4 +13,7 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnPrestamos;
     private JButton btnDevoluciones;
     private JButton btnReportes;
+    private JButton btnLectores;
+    private JLabel logo;
+    private JButton cerrarSesionButton;
 }
