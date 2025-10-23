@@ -12,7 +12,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="fcd29" class="javax.swing.JTable" binding="tablaTrabajadores">
+          <component id="fcd29" class="javax.swing.JTable" binding="tablaTrabajadores" custom-create="true">
             <constraints/>
             <properties/>
           </component>
