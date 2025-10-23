@@ -5,9 +5,10 @@ import org.biblioteca.services.LectorService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
-public class GestionLector extends JFrame{
+public class GestionLector extends JPanel{
     private JPanel mainPanel;
     private JTable tablaLectores;
     private JPanel butoPanel;
@@ -23,11 +24,9 @@ public class GestionLector extends JFrame{
 
         this.lectorService = new LectorService();
 
-        setTitle("Gestión de Lectores");
-        setContentPane(mainPanel);
-        setSize(700, 450);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        this.setLayout(new BorderLayout());
+        this.add(mainPanel, BorderLayout.CENTER);
+
 
         actualizarTabla();
 
@@ -53,9 +52,12 @@ public class GestionLector extends JFrame{
     }
 
     private void abrirDialogoEditor(Lector lector) {
-        EditorLector dialogo = new EditorLector(this, lectorService, lector);
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        EditorLector dialogo = new EditorLector(parentFrame, lectorService, lector);
         dialogo.setVisible(true);
         actualizarTabla();
+
     }
 
     private void editarLectorSeleccionado() {
@@ -82,9 +84,6 @@ public class GestionLector extends JFrame{
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GestionLector().setVisible(true));
-    }
 
 
     private void createUIComponents() {

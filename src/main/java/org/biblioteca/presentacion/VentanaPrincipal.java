@@ -71,13 +71,13 @@ public class VentanaPrincipal extends JFrame {
         btnInicio.addActionListener(e -> abrirVista("Inicio", new JPanel()));
 
         // Botón TRABAJADORES (Placeholder - Reemplazar con new GestionTrabajadores() cuando esté lista)
-        //btnTrabajadores.addActionListener(e -> abrirVista("Gestión Trabajadores", new JPanel()));
+        btnTrabajadores.addActionListener(e -> abrirVista("Gestión Administrativa", new GestionAdminDashboard()));
 
         // Usamos el nuevo panel contenedor que creamos: GestionLibrosDashboard
         btnLibros.addActionListener(e -> abrirVista("Gestión de Recursos de Libros", new GestionLibrosDashboard()));
 
         // Botón LECTORES (Placeholder - Reemplazar con new GestionLectores() cuando esté lista)
-        //btnLectores.addActionListener(e -> abrirVista("Gestión Lectores", new JPanel()));
+        btnLectores.addActionListener(e -> abrirVista("Gestión de Lectores", new GestionLector()));
 
         // Botón PRÉSTAMOS (Placeholder)
         //btnPrestamos.addActionListener(e -> abrirVista("Gestión de Préstamos", new JPanel()));

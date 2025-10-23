@@ -5,9 +5,10 @@ import org.biblioteca.services.ProveedorService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
-public class GestionProveedor  extends JFrame{
+public class GestionProveedor  extends JPanel{
     private JPanel mainPanel;
     private JScrollPane centralPanel;
     private JButton btnNuevo;
@@ -20,11 +21,9 @@ public class GestionProveedor  extends JFrame{
     public GestionProveedor() {
         this.proveedorService = new ProveedorService();
 
-        setTitle("Gestión de Proveedores");
-        setContentPane(mainPanel);
-        setSize(700, 450);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        this.setLayout(new BorderLayout());
+        this.add(mainPanel, BorderLayout.CENTER);
+
 
         actualizarTabla();
 
@@ -50,7 +49,9 @@ public class GestionProveedor  extends JFrame{
     }
 
     private void abrirDialogoEditor(Proveedor proveedor) {
-        EditorProveedor dialogo = new EditorProveedor(this, proveedorService, proveedor);
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        EditorProveedor dialogo = new EditorProveedor(parentFrame, proveedorService, proveedor);
         dialogo.setVisible(true);
         actualizarTabla();
     }
@@ -80,9 +81,7 @@ public class GestionProveedor  extends JFrame{
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GestionProveedor().setVisible(true));
-    }
+
 
     private void createUIComponents() {
         modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Dirección", "Teléfono", "Email"}, 0) {
