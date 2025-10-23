@@ -23,10 +23,10 @@ public class MenuPrincipal extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // 1. Llamamos al método que crea nuestro menú
+
         crearBarraDeMenu();
 
-        // 2. Asignamos los eventos a los ítems del menú
+
         menuItemLibros.addActionListener(e -> {
             GestionLibro v = new GestionLibro();
             v.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -70,10 +70,10 @@ public class MenuPrincipal extends JFrame{
 
 
     private void crearBarraDeMenu() {
-        // Crear la barra principal
+
         barraMenu = new JMenuBar();
 
-        // --- Menú "Mantenimiento" ---
+
         menuMantenimiento = new JMenu("Mantenimiento");
 
         menuItemLibros = new JMenuItem("Gestionar Libros");
@@ -88,16 +88,16 @@ public class MenuPrincipal extends JFrame{
         menuMantenimiento.add(menuItemCategorias);
         menuMantenimiento.add(menuItemProveedores);
 
-        // --- Menú "Sistema" ---
+
         menuSistema = new JMenu("Sistema");
         menuItemSalir = new JMenuItem("Salir");
         menuSistema.add(menuItemSalir);
 
-        // Añadir los menús a la barra
+
         barraMenu.add(menuMantenimiento);
         barraMenu.add(menuSistema);
 
-        // 3. ¡El paso más importante! Asignar la barra de menú a la ventana
+
         this.setJMenuBar(barraMenu);
     }
 
