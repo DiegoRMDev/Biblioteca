@@ -11,8 +11,6 @@ public class CategoriaDAOImpl implements  CategoriaDAO {
     private Connection conexion;
 
     public CategoriaDAOImpl() {
-        // En un proyecto real, la conexión se manejaría de forma más robusta
-        // (ej. Connection Pooling)
         this.conexion = DBConnection.getConnection();
     }
 

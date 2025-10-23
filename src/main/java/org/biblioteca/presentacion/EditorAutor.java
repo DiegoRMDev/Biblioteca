@@ -24,7 +24,7 @@ public class EditorAutor extends JDialog {
         this.autorActual = autor;
 
         setTitle(autor == null ? "Nuevo Autor" : "Editar Autor");
-        setContentPane(mainPanel); // Vinculado desde el UI Designer
+        setContentPane(mainPanel);
         setSize(400, 250);
         setLocationRelativeTo(parent);
 
@@ -43,6 +43,8 @@ public class EditorAutor extends JDialog {
         String nombre = txtNombre.getText();
         String apellido = txtApellido.getText();
         String nacionalidad = txtNacionalidad.getText();
+
+
 
         try {
             if (autorActual == null) {

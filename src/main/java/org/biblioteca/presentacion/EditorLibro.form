@@ -141,14 +141,6 @@
             </constraints>
             <properties/>
           </component>
-          <component id="f224c" class="javax.swing.JTextField" binding="txtEstado">
-            <constraints>
-              <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
           <component id="dca5" class="javax.swing.JTextField" binding="txtStock">
             <constraints>
               <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
@@ -192,6 +184,19 @@
               </component>
             </children>
           </scrollpane>
+          <component id="9fe97" class="javax.swing.JComboBox" binding="cboEstado">
+            <constraints>
+              <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <model>
+                <item value="Activo"/>
+                <item value="Inactivo"/>
+                <item value="Retirado"/>
+              </model>
+              <toolTipText value=""/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="6b2b7" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
