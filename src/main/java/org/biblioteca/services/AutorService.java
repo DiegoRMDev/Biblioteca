@@ -15,20 +15,14 @@ public class AutorService {
         this.autorDAO = new AutorDAOImpl();
     }
 
-    /**
-     * Registra un nuevo autor, aprovechando las validaciones del modelo.
-     * @throws IllegalArgumentException si los datos no son válidos.
-     */
+
     public void registrarAutor(String nombre, String apellido, String nacionalidad) throws IllegalArgumentException {
         // Al usar este constructor, se activan tus validaciones en los setters
         Autor nuevoAutor = new Autor(nombre, apellido, nacionalidad);
         autorDAO.insertar(nuevoAutor);
     }
 
-    /**
-     * Modifica un autor existente, aprovechando las validaciones del modelo.
-     * @throws IllegalArgumentException si los datos no son válidos.
-     */
+
     public void modificarAutor(int id, String nombre, String apellido, String nacionalidad) throws IllegalArgumentException {
         // Creamos un objeto Autor y usamos los setters para validar los nuevos datos
         Autor autorExistente = new Autor();

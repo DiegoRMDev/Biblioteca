@@ -5,10 +5,11 @@ import org.biblioteca.services.LibroService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GestionLibro extends  JFrame{
+public class GestionLibro extends  JPanel{
     private JPanel mainPanel;
     private JScrollPane centralPanel;
     private JButton btnNuevo;
@@ -22,11 +23,9 @@ public class GestionLibro extends  JFrame{
     public GestionLibro() {
         this.libroService = new LibroService();
 
-        setTitle("Gestión de Libros");
-        setContentPane(mainPanel);
-        setSize(800, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        this.setLayout(new BorderLayout());
+        this.add(mainPanel, BorderLayout.CENTER);
+
 
         btnNuevo.addActionListener(e -> abrirDialogoEditor(null));
         btnEditar.addActionListener(e -> editarLibroSeleccionado());
@@ -63,8 +62,11 @@ public class GestionLibro extends  JFrame{
     }
 
     private void abrirDialogoEditor(Libro libro) {
-        // Creamos y mostramos el diálogo, pasándole el libro a editar (o null si es nuevo)
-        EditorLibro dialogo = new EditorLibro(this, libroService, libro);
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Creamos y mostramos el diálogo, pasándole el JFrame padre
+        EditorLibro dialogo = new EditorLibro(parentFrame, libroService, libro);
+
         dialogo.setVisible(true);
         actualizarTabla(); // Actualizamos la tabla por si hubo cambios
     }
@@ -94,9 +96,6 @@ public class GestionLibro extends  JFrame{
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GestionLibro().setVisible(true));
-    }
 
     private void createUIComponents() {
         // Creamos el modelo de la tabla de forma personalizada

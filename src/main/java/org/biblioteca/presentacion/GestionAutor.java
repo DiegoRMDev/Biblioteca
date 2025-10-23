@@ -5,9 +5,10 @@ import org.biblioteca.services.AutorService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
-public class GestionAutor extends JFrame {
+public class GestionAutor extends JPanel {
     private JPanel mainPanel;
     private JScrollPane centralPanel;
     private JTable tablaAutores;
@@ -21,12 +22,9 @@ public class GestionAutor extends JFrame {
     public GestionAutor() {
         this.servicio = new AutorService();
 
-        // Configuración de la ventana
-        setTitle("Gestión de Autores");
-        setContentPane(mainPanel); // Vinculado desde el UI Designer
-        setSize(700, 450);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+
 
         // Lógica de los botones
         btnNuevo.addActionListener(e -> abrirDialogoEditor(null));
@@ -51,7 +49,13 @@ public class GestionAutor extends JFrame {
     }
 
     private void abrirDialogoEditor(Autor autor) {
-        EditorAutor dialogo = new EditorAutor(this, servicio, autor);
+        // 1. Necesitas obtener la ventana (JFrame) que contiene este JPanel.
+        // getParent() sube en la jerarquía de componentes hasta encontrar el JFrame.
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // 2. Pasamos el JFrame padre (parentFrame) al constructor del diálogo.
+        EditorAutor dialogo = new EditorAutor(parentFrame, servicio, autor);
+
         dialogo.setVisible(true);
         actualizarTabla();
     }
@@ -80,9 +84,6 @@ public class GestionAutor extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GestionAutor().setVisible(true));
-    }
 
     private void createUIComponents() {
         modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Apellido", "Nacionalidad"}, 0) {

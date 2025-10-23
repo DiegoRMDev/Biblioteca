@@ -11,6 +11,9 @@ public class Trabajador {
     private int rolID;
     private Timestamp fechaRegistro;
 
+    private byte[] contrasenaHash; // Almacena el HASH (byte[]) de la BD
+    private byte[] salt;           // Almacena el SALT (byte[]) de la BD
+
     public Trabajador() {
     }
 
@@ -94,7 +97,7 @@ public class Trabajador {
 
         String contrasenaLimpia = contrasena.trim();
 
-        // Regla de Negocio: Longitud Mínima (Ej: 6 caracteres es un buen mínimo)
+
         if (contrasenaLimpia.length() < 6) {
             throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres.");
         }
@@ -122,5 +125,21 @@ public class Trabajador {
 
     public void setFechaRegistro(Timestamp fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public byte[] getContrasenaHash() {
+        return contrasenaHash;
+    }
+
+    public void setContrasenaHash(byte[] contrasenaHash) {
+        this.contrasenaHash = contrasenaHash;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
     }
 }
