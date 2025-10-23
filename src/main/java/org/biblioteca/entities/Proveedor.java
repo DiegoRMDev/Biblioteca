@@ -121,4 +121,9 @@ public class Proveedor {
             this.email = null; // Permite que sea nulo o vacío
         }
     }
+
+    @Override
+    public String toString() {
+        return this.nombre;
+    }
 }

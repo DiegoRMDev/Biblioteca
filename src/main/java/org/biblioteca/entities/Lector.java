@@ -140,4 +140,10 @@ public class Lector {
     public void setFechaRegistro(Timestamp fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
+
+    @Override
+    public String toString() {
+
+        return this.nombre + " (DNI: " + this.dni + ")";
+    }
 }

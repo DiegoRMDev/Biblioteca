@@ -22,12 +22,12 @@ public class EditorLibro extends JDialog {
     private JTextField txtIdioma;
     private JTextField txtUbFisc;
     private JTextField txtRutImg;
-    private JTextField txtEstado;
     private JTextField txtStock;
     private JComboBox<Categoria> cboCategoria;
     private JList<Autor> lstAutores;
     private JButton btnGuardar;
     private JButton btnCancelar;
+    private JComboBox cboEstado;
 
 
     private LibroService libroService;
@@ -76,7 +76,9 @@ public class EditorLibro extends JDialog {
         txtIdioma.setText(libroAEditar.getIdioma());
         txtUbFisc.setText(libroAEditar.getUbicacionFisica());
         txtRutImg.setText(libroAEditar.getRutaImagen());
-        txtEstado.setText(libroAEditar.getEstado());
+
+
+
         txtStock.setText(String.valueOf(libroAEditar.getStock()));
 
         // Seleccionar la categoría correcta en el ComboBox
@@ -110,7 +112,11 @@ public class EditorLibro extends JDialog {
         String idioma = txtIdioma.getText();
         String ubicFisica = txtUbFisc.getText();
         String rutImg = txtRutImg.getText();
-        String estado = txtEstado.getText();
+
+
+
+
+        String estado= cboEstado.getSelectedItem().toString();
 
         // Variables para los campos numéricos y objetos
         Integer anioPub = null;
@@ -119,24 +125,24 @@ public class EditorLibro extends JDialog {
         List<Autor> autoresSeleccionados = lstAutores.getSelectedValuesList();
 
         try {
-            // --- 2. Bloque crítico de conversión de tipos ---
+
             // Si hay texto o está vacío, lanza NumberFormatException
             anioPub = Integer.valueOf(txtAnioPub.getText());
             stock = Integer.valueOf(txtStock.getText());
-            // ------------------------------------------------
+
 
             Libro libro = new Libro();
 
-            // 3. Usar los setters que tienen validaciones (Puede lanzar IllegalArgumentException)
+            //  Usar los setters que tienen validaciones (Puede lanzar IllegalArgumentException)
             libro.setTitulo(titulo);
             libro.setIsbn(isbn);
             libro.setEditorial(editorial);
-            libro.setAnioPublicacion(anioPub); // Ahora usa el Integer ya convertido
+            libro.setAnioPublicacion(anioPub);
             libro.setIdioma(idioma);
             libro.setUbicacionFisica(ubicFisica);
             libro.setRutaImagen(rutImg);
             libro.setEstado(estado);
-            libro.setStock(stock);             // Ahora usa el Integer ya convertido
+            libro.setStock(stock);
 
             libro.setCategoriaID(categoriaSeleccionada.getCategoriaID());
 
@@ -148,9 +154,9 @@ public class EditorLibro extends JDialog {
                 libroService.modificarLibro(libro, autoresSeleccionados);
             }
 
-            dispose(); // Cierra si fue exitoso
+            dispose();
 
-            // 5. Manejo de excepciones combinado
+            // Manejo de excepciones combinado
         } catch (NumberFormatException ex) {
             // Captura si el usuario escribió letras o dejó vacíos los campos numéricos
             JOptionPane.showMessageDialog(this, "Debe ingresar valores numéricos válidos (ej: números enteros) en los campos 'Año de Publicación' y 'Stock'.", "Error de Formato", JOptionPane.ERROR_MESSAGE);

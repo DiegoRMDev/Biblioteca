@@ -45,6 +45,15 @@ public class EditorCategoria extends JDialog{
         String nombre = txtNombre.getText();
         String descripcion = txtDescripcion.getText();
 
+        if (nombre.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "El nombre de la categoria es obligatorio.",
+                    "Campo Vacío",
+                    JOptionPane.WARNING_MESSAGE);
+            txtNombre.requestFocus();
+            return;
+        }
+
 
 
         try {
