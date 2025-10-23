@@ -50,34 +50,22 @@ public class SessionManager {
     }
 
     /**
-     * ==========================================================
-     * MÉTODOS DE PERMISOS BASADOS EN EL ROL (Según la discusión previa)
-     * ==========================================================
+
+     * MÉTODOS DE PERMISOS BASADOS EN EL ROL
+
      */
 
-    /**
-     * Verifica si el usuario logueado es Administrador.
-     * (Asumimos RolID = 1 para Administrador)
-     * @return true si el RolID es 1.
-     */
+
     public static boolean esAdministrador() {
         return currentTrabajador != null && currentTrabajador.getRolID() == 1;
     }
 
-    /**
-     * Verifica si el usuario logueado es Bibliotecario (o cualquier otro rol operativo).
-     * (Asumimos RolID = 2 para Bibliotecario)
-     * @return true si el RolID es 2.
-     */
+
     public static boolean esBibliotecario() {
         return currentTrabajador != null && currentTrabajador.getRolID() == 2;
     }
 
-    /**
-     * Metodo genérico para verificar si el usuario tiene un RolID específico.
-     * @param rolId ID del rol a verificar.
-     * @return true si el usuario tiene ese rol.
-     */
+
     public static boolean tieneRol(int rolId) {
         return currentTrabajador != null && currentTrabajador.getRolID() == rolId;
     }

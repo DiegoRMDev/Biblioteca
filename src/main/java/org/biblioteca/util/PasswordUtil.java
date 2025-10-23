@@ -15,10 +15,7 @@ public class PasswordUtil {
     private static final int SALT_LENGTH = 64;
     private static final String HASH_ALGORITHM = "SHA-256";
 
-    /**
-     * Genera un salt aleatorio seguro.
-     * @return Array de bytes (byte[]) del salt.
-     */
+
     public static byte[] getNewSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[SALT_LENGTH];
@@ -26,12 +23,7 @@ public class PasswordUtil {
         return salt;
     }
 
-    /**
-     * Genera el hash de una contraseña con un salt dado.
-     * @param password Contraseña plana (String) a hashear.
-     * @param salt Array de bytes (byte[]) del salt.
-     * @return Array de bytes (byte[]) del hash generado.
-     */
+
     public static byte[] hashPassword(String password, byte[] salt) {
         try {
             MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
@@ -46,13 +38,7 @@ public class PasswordUtil {
         }
     }
 
-    /**
-     * Verifica si una contraseña plana coincide con el hash y salt almacenados.
-     * @param password Contraseña plana ingresada.
-     * @param storedHash Hash almacenado en la BD (VARBINARY).
-     * @param storedSalt Salt almacenado en la BD (VARBINARY).
-     * @return true si coinciden, false en caso contrario.
-     */
+
     public static boolean verifyPassword(String password, byte[] storedHash, byte[] storedSalt) {
         // 1. Hashear la contraseña ingresada con el salt ALMACENADO
         byte[] newHash = hashPassword(password, storedSalt);

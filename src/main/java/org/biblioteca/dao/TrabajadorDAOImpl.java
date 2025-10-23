@@ -49,7 +49,7 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
             stmt.setBytes(4, salt);
 
             stmt.setInt(5, trabajador.getRolID());
-            // Se asume que el sistema establece la FechaRegistro al momento de la inserción
+
             stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
 
             stmt.executeUpdate();

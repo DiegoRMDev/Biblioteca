@@ -32,9 +32,7 @@ public class LoginUI extends JFrame {
         configurarListeners();
 
         setupPlaceholders();
-        if (txtContrasena != null) {
-            txtContrasena.setEchoChar((char) 0); // Deshabilita la ocultación
-        }
+
 
         pack();
         setLocationRelativeTo(null);

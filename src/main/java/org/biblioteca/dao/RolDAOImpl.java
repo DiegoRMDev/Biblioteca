@@ -2,6 +2,7 @@ package org.biblioteca.dao;
 
 import org.biblioteca.entities.Rol;
 import org.biblioteca.util.DBConnection;
+import java.sql.Statement;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,16 +25,26 @@ public class RolDAOImpl implements RolDAO {
 
     @Override
     public void insertar(Rol rol) {
-        // Asumiendo que la BD autogenera el RolID
         String sql = "INSERT INTO Roles (NombreRol) VALUES (?)";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-            // El setter de la entidad ya validó el nombre
+
+        try (PreparedStatement stmt = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             stmt.setString(1, rol.getNombreRol());
             stmt.executeUpdate();
+
+            // RECUPERAR EL ID GENERADO POR LA BASE DE DATOS
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int idGenerado = rs.getInt(1);
+                    // Asignamos el ID autogenerado al objeto Rol
+                    rol.setRolID(idGenerado);
+                }
+            }
+
         } catch (SQLException e) {
             System.err.println("Error al insertar Rol: " + e.getMessage());
-            // En un sistema real, se lanzaría una excepción más específica (ej. RolDuplicadoException)
             e.printStackTrace();
+            throw new RuntimeException("Error de persistencia al insertar Rol.", e);
         }
     }
 

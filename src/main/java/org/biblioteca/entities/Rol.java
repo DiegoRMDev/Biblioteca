@@ -44,4 +44,9 @@ public class Rol {
 
         this.nombreRol = nombreLimpio;
     }
+
+    @Override
+    public String toString() {
+        return nombreRol;
+    }
 }

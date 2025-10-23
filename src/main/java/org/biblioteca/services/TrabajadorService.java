@@ -54,7 +54,8 @@ public class TrabajadorService {
 
         if (esAutentico) {
 
-            trabajadorAlmacenado.setContrasena(null);
+            trabajadorAlmacenado.setContrasenaHash(null);
+            trabajadorAlmacenado.setSalt(null);
 
             return trabajadorAlmacenado;
         } else {
@@ -81,5 +82,12 @@ public class TrabajadorService {
 
     public void eliminarTrabajador(int id) {
         trabajadorDAO.eliminar(id);
+    }
+
+    public Trabajador obtenerTrabajadorPorUsuarioLogin(String usuarioLogin) {
+        if (usuarioLogin == null || usuarioLogin.trim().isEmpty()) {
+            return null;
+        }
+        return trabajadorDAO.obtenerPorUsuarioLogin(usuarioLogin);
     }
 }

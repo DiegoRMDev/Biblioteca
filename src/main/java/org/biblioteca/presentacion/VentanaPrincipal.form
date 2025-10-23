@@ -218,15 +218,12 @@
           </component>
         </children>
       </grid>
-      <grid id="fe0d8" binding="contentPanel" layout-manager="CardLayout" hgap="0" vgap="0">
+      <tabbedpane id="41ee6" binding="contentPanel">
         <constraints border-constraint="Center"/>
-        <properties>
-          <background color="-1118482"/>
-          <preferredSize width="900" height="600"/>
-        </properties>
+        <properties/>
         <border type="none"/>
         <children/>
-      </grid>
+      </tabbedpane>
     </children>
   </grid>
 </form>

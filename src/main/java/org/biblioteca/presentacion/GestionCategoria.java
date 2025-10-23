@@ -5,9 +5,10 @@ import org.biblioteca.services.CategoriaService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
-public class GestionCategoria  extends JFrame{
+public class GestionCategoria  extends JPanel{
     private JPanel mainPanel;
     private JTable tableCategoria;
     private JButton btnNuevo;
@@ -22,13 +23,9 @@ public class GestionCategoria  extends JFrame{
     public GestionCategoria() {
         this.servicio = new CategoriaService();
 
+        this.setLayout(new BorderLayout()); // Establece un layout para el contenedor
+        this.add(mainPanel, BorderLayout.CENTER); // Añade el panel diseñado por el form
 
-        setTitle("Gestión de Categorías con UI Designer");
-
-        setContentPane(mainPanel);
-        setSize(600, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         // Cargar los datos iniciales
         actualizarTabla();
@@ -52,7 +49,10 @@ public class GestionCategoria  extends JFrame{
     }
 
     private void abrirDialogoEditor(Categoria categoria) {
-        EditorCategoria dialogo = new EditorCategoria(this, servicio, categoria);
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Pasamos el JFrame padre (parentFrame) al constructor del diálogo.
+        EditorCategoria dialogo = new EditorCategoria(parentFrame, servicio, categoria);
         dialogo.setVisible(true);
         actualizarTabla();
     }
@@ -83,11 +83,6 @@ public class GestionCategoria  extends JFrame{
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new GestionCategoria().setVisible(true);
-        });
-    }
 
     private void createUIComponents() {
 
