@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionTrabajador">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <scrollpane id="5dcb8" binding="centralPanel">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="fcd29" class="javax.swing.JTable" binding="tablaTrabajadores">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+      <grid id="5a6e7" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="e1684" class="javax.swing.JButton" binding="btnNuevo">
+            <constraints/>
+            <properties>
+              <text value="Nuevo"/>
+            </properties>
+          </component>
+          <component id="358c" class="javax.swing.JButton" binding="btnEditar">
+            <constraints/>
+            <properties>
+              <text value="Editar"/>
+            </properties>
+          </component>
+          <component id="5dd98" class="javax.swing.JButton" binding="btnEliminar">
+            <constraints/>
+            <properties>
+              <text value="Eliminar"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>
