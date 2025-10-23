@@ -90,4 +90,8 @@ public class TrabajadorService {
         }
         return trabajadorDAO.obtenerPorUsuarioLogin(usuarioLogin);
     }
+
+    public Trabajador obtenerPorId(int id) {
+        return trabajadorDAO.obtenerPorId(id);
+    }
 }
