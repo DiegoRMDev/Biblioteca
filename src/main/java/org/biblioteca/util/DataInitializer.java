@@ -59,21 +59,23 @@ public class DataInitializer {
     private static void inicializarTrabajadorAdmin() {
         System.out.println("Verificando Trabajador Administrador...");
 
-        // 1. Verificar si ya existe un trabajador con el usuario 'admin'.
         if (trabajadorService.obtenerTrabajadorPorUsuarioLogin("JuanAdmin") == null) {
 
-            // 2. Obtener el RolID del Administrador (se garantiza su existencia en el paso anterior)
             Rol rolAdmin = rolService.obtenerRolPorNombre(ROL_ADMIN);
 
             if (rolAdmin != null) {
-                // 3. Registrar el trabajador usando el SERVICE.
+                // MODIFICACIÓN: Usamos la nueva firma con los 8 parámetros
                 trabajadorService.registrarTrabajador(
-                        "Juan Perez", // Nombre
-                        "JuanAdmin",                 // UsuarioLogin
-                        "admin123",                // Contrasena
-                        rolAdmin.getRolID()      // RolID
+                        "Juan",              // Nombre
+                        "Perez",             // Apellido (NUEVO)
+                        "72345678",          // DNI (NUEVO - Debe tener 8 dígitos)
+                        "JuanAdmin",         // UsuarioLogin
+                        "admin123",          // Contrasena
+                        rolAdmin.getRolID(), // RolID
+                        "juan20@gmail.com", // Email (NUEVO)
+                        "988800999"          // Telefono (NUEVO)
                 );
-                System.out.println("-> Trabajador 'JuanAdmin' creado con contraseña 'admin123'.");
+                System.out.println("-> Trabajador 'JuanAdmin' creado con contraseña 'admin123' y datos completos.");
             } else {
                 System.err.println("ERROR: No se pudo obtener el Rol ID para Administrador. No se creó el usuario Admin.");
             }

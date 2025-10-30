@@ -29,7 +29,7 @@ public class GestionTrabajador extends JPanel {
         this.setLayout(new BorderLayout());
         this.add(mainPanel, BorderLayout.CENTER);
 
-        // 2. Aplicar permisos CRUD (Deshabilitar si no es Admin)
+        // 2. Aplicar permisos CRUD
         aplicarPermisosCRUD();
 
         // 3. Configurar Listeners
@@ -54,11 +54,16 @@ public class GestionTrabajador extends JPanel {
         modeloTabla.setRowCount(0); // Limpiar la tabla
         List<Trabajador> trabajadores = trabajadorService.listarTrabajadores();
         for (Trabajador t : trabajadores) {
+            // **MODIFICACIÓN AQUÍ:** Incluyendo Apellido, DNI, Email y Estado.
             modeloTabla.addRow(new Object[]{
                     t.getTrabajadorID(),
                     t.getNombre(),
+                    t.getApellido(),       // NUEVO
+                    t.getDni(),            // NUEVO
                     t.getUsuarioLogin(),
+                    t.getEmail(),          // NUEVO
                     t.getRolID(),
+                    t.getEstado(),         // NUEVO
                     t.getFechaRegistro()
             });
         }
@@ -99,14 +104,22 @@ public class GestionTrabajador extends JPanel {
         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este trabajador?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
         if (confirmacion == JOptionPane.YES_OPTION) {
             int trabajadorID = (int) modeloTabla.getValueAt(fila, 0);
-            trabajadorService.eliminarTrabajador(trabajadorID);
-            actualizarTabla();
+            try {
+                trabajadorService.eliminarTrabajador(trabajadorID);
+                actualizarTabla();
+                JOptionPane.showMessageDialog(this, "Trabajador eliminado con éxito.", "Eliminación", JOptionPane.INFORMATION_MESSAGE);
+            } catch (RuntimeException ex) {
+                // Capturar errores de BD, como restricciones de clave foránea (FK)
+                JOptionPane.showMessageDialog(this, "Error al eliminar: El trabajador podría tener registros asociados.", "Error de Persistencia", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         }
     }
 
     private void createUIComponents() {
-        // 1. Inicializamos el modelo (la cabecera)
-        modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Usuario Login", "Rol ID", "Fecha Registro"}, 0) {
+        // **MODIFICACIÓN AQUÍ:**
+        // 1. Inicializamos el modelo con las nuevas columnas
+        modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Apellido", "DNI", "Usuario Login", "Email", "Rol ID", "Estado", "Fecha Registro"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;

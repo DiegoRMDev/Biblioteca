@@ -17,6 +17,11 @@ public class EditorTrabajador extends JDialog {
     private JTextField txtUsuarioLogin;
     private JPasswordField txtContrasena;
     private JComboBox<Rol> cboRol;
+    private JTextField txtApellido;
+    private JTextField txtDni;
+    private JTextField txtEmail;
+    private JTextField txtTelefono;
+    private JComboBox<String> cboEstado;
 
     private TrabajadorService trabajadorService;
     private RolService rolService;
@@ -39,20 +44,29 @@ public class EditorTrabajador extends JDialog {
         setLocationRelativeTo(parent);
 
         cargarRoles();
+        cargarEstados(); // Cargar el ComboBox de estado
 
         if (!esCreacion) {
             poblarFormulario();
-            // En modo edición, no se permite cambiar el usuario o rol fácilmente
-            txtUsuarioLogin.setEnabled(false);
-            // La contraseña solo se actualiza si el usuario la escribe
-            txtContrasena.setText(""); // Limpiamos para que el usuario sepa que no se va a cambiar
+            // En modo edición
+            txtUsuarioLogin.setEnabled(false); // No se edita el usuario
+            txtDni.setEnabled(false);          // No se edita el DNI
+            txtContrasena.setText("");
         } else {
-            // En modo creación, la contraseña es obligatoria
+            // En modo creación
             txtContrasena.setText("");
         }
 
         btnGuardar.addActionListener(e -> guardarTrabajador());
         btnCancelar.addActionListener(e -> dispose());
+    }
+
+
+    private void cargarEstados() {
+        DefaultComboBoxModel<String> estadoModel = new DefaultComboBoxModel<>();
+        estadoModel.addElement("Activo");
+        estadoModel.addElement("Inactivo");
+        cboEstado.setModel(estadoModel);
     }
 
     private void cargarRoles() {
@@ -64,9 +78,14 @@ public class EditorTrabajador extends JDialog {
 
     private void poblarFormulario() {
         txtNombre.setText(trabajadorAEditar.getNombre());
+        txtApellido.setText(trabajadorAEditar.getApellido());
+        txtDni.setText(trabajadorAEditar.getDni());
         txtUsuarioLogin.setText(trabajadorAEditar.getUsuarioLogin());
+        txtEmail.setText(trabajadorAEditar.getEmail());
+        txtTelefono.setText(trabajadorAEditar.getTelefono());
 
-        // Seleccionar el rol actual
+        cboEstado.setSelectedItem(trabajadorAEditar.getEstado());
+
         for (int i = 0; i < cboRol.getItemCount(); i++) {
             Rol rol = cboRol.getItemAt(i);
             if (rol.getRolID() == trabajadorAEditar.getRolID()) {
@@ -77,50 +96,61 @@ public class EditorTrabajador extends JDialog {
     }
 
     private void guardarTrabajador() {
-        // 1. Recoger datos
         String nombre = txtNombre.getText();
+        String apellido = txtApellido.getText();
+        String dni = txtDni.getText();
         String usuarioLogin = txtUsuarioLogin.getText();
         String contrasena = new String(txtContrasena.getPassword());
+        String email = txtEmail.getText();
+        String telefono = txtTelefono.getText();
+        String estado = (String) cboEstado.getSelectedItem();
+
         Rol rolSeleccionado = (Rol) cboRol.getSelectedItem();
 
-        // Validaciones básicas de interfaz
-        if (rolSeleccionado == null) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar un rol.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+        if (rolSeleccionado == null || estado == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un rol y un estado.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         try {
             if (esCreacion) {
-                // Modo CREACIÓN
-                // Contraseña es obligatoria
                 if (contrasena.isEmpty()) {
                     throw new IllegalArgumentException("La contraseña es obligatoria al crear un nuevo trabajador.");
                 }
 
-                trabajadorService.registrarTrabajador(nombre, usuarioLogin, contrasena, rolSeleccionado.getRolID());
+                trabajadorService.registrarTrabajador(
+                        nombre, apellido, dni, usuarioLogin, contrasena,
+                        rolSeleccionado.getRolID(), email, telefono
+                );
+                JOptionPane.showMessageDialog(this, "Trabajador registrado con éxito.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+
 
             } else {
-                // Modo EDICIÓN
-                trabajadorAEditar.setNombre(nombre);
-                trabajadorAEditar.setRolID(rolSeleccionado.getRolID());
 
-                // Actualizar la contraseña SOLO si el usuario ha escrito algo
+                trabajadorAEditar.setNombre(nombre);
+                trabajadorAEditar.setApellido(apellido);
+                trabajadorAEditar.setEmail(email);
+                trabajadorAEditar.setTelefono(telefono);
+                trabajadorAEditar.setRolID(rolSeleccionado.getRolID());
+                trabajadorAEditar.setEstado(estado);
+
                 if (!contrasena.isEmpty()) {
                     trabajadorService.actualizarContrasena(trabajadorAEditar.getTrabajadorID(), contrasena);
                 }
 
-                // Actualizar los datos básicos (Nombre y RolID)
                 trabajadorService.actualizarDatos(trabajadorAEditar);
+                JOptionPane.showMessageDialog(this, "Datos del trabajador actualizados con éxito.", "Edición Exitosa", JOptionPane.INFORMATION_MESSAGE);
+
             }
 
             dispose();
 
         } catch (IllegalArgumentException ex) {
-            // Captura errores de validación (Nombre vacío, Usuario inválido, Contraseña corta)
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error de Validación: " + ex.getMessage(), "Datos Inválidos", JOptionPane.ERROR_MESSAGE);
         } catch (RuntimeException ex) {
-            // Captura errores de persistencia (ej: UsuarioLogin ya existe - UNIQUE constraint)
-            JOptionPane.showMessageDialog(this, "Error: El usuario de login ya está registrado o hubo un error en la BD.", "Error de Persistencia", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error de Persistencia: El DNI o Usuario ya existe, o hubo un error en la base de datos.", "Error de Guardado", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
         }
     }
 }
+
