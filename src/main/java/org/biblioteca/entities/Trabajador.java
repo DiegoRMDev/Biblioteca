@@ -6,32 +6,50 @@ public class Trabajador {
 
     private int trabajadorID;
     private String nombre;
+    private String apellido;    // NUEVO
+    private String dni;         // NUEVO
     private String usuarioLogin;
     private String contrasena; // Contraseña plana, temporalmente usada para hashear en el DAO
     private int rolID;
+    private String email;       // NUEVO
+    private String telefono;    // NUEVO
+    private String estado;      // NUEVO
     private Timestamp fechaRegistro;
 
     private byte[] contrasenaHash; // Almacena el HASH (byte[]) de la BD
     private byte[] salt;           // Almacena el SALT (byte[]) de la BD
 
     public Trabajador() {
+        this.estado = "Activo";
     }
 
-    // Constructor para CARGAR datos desde la BD
-    public Trabajador(int trabajadorID, String nombre, String usuarioLogin, int rolID, Timestamp fechaRegistro) {
+    // Constructor 1: Para CARGAR datos COMPLETOS desde la BD
+    public Trabajador(int trabajadorID, String nombre, String apellido, String dni, String usuarioLogin,
+                      int rolID, String email, String telefono, String estado, Timestamp fechaRegistro) {
         this.trabajadorID = trabajadorID;
         this.nombre = nombre;
+        this.apellido = apellido;
+        this.dni = dni;
         this.usuarioLogin = usuarioLogin;
         this.rolID = rolID;
+        this.email = email;
+        this.telefono = telefono;
+        this.estado = estado;
         this.fechaRegistro = fechaRegistro;
     }
 
-    // Constructor para REGISTRAR un nuevo trabajador (Debe usar setters para validar)
-    public Trabajador(String nombre, String usuarioLogin, String contrasena, int rolID) {
+    // Constructor 2: Para REGISTRAR un nuevo trabajador (Debe usar setters para validar)
+    public Trabajador(String nombre, String apellido, String dni, String usuarioLogin, String contrasena,
+                      int rolID, String email, String telefono) {
         this.setNombre(nombre);
+        this.setApellido(apellido);
+        this.setDni(dni);
         this.setUsuarioLogin(usuarioLogin);
         this.setContrasena(contrasena);
         this.setRolID(rolID);
+        this.setEmail(email);
+        this.setTelefono(telefono);
+        this.setEstado("Activo"); // Estado inicial al crear
     }
 
     public int getTrabajadorID() {
@@ -62,6 +80,82 @@ public class Trabajador {
 
         this.nombre = nombreLimpio;
     }
+
+
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        if (apellido == null || apellido.trim().isEmpty()) {
+            throw new IllegalArgumentException("El apellido del trabajador es obligatorio.");
+        }
+        if (apellido.trim().length() > 100) {
+            throw new IllegalArgumentException("El apellido no puede exceder los 100 caracteres.");
+        }
+        this.apellido = apellido.trim();
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        if (dni == null || dni.trim().isEmpty()) {
+            throw new IllegalArgumentException("El DNI es obligatorio.");
+        }
+        String dniLimpio = dni.trim();
+        // Validación de BD: 8 dígitos numéricos
+        if (dniLimpio.length() != 8 || !dniLimpio.matches("\\d+")) {
+            throw new IllegalArgumentException("El DNI debe tener exactamente 8 dígitos numéricos.");
+        }
+        this.dni = dniLimpio;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        if (email != null && email.trim().length() > 100) {
+            throw new IllegalArgumentException("El email no puede exceder los 100 caracteres.");
+        }
+        // Validación básica de formato (permite null/vacío)
+        if (email != null && !email.trim().isEmpty() && !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,4}$")) {
+            throw new IllegalArgumentException("El formato del email es inválido.");
+        }
+        this.email = (email != null) ? email.trim() : null;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        if (telefono != null && telefono.trim().length() > 15) {
+            throw new IllegalArgumentException("El teléfono no puede exceder los 15 caracteres.");
+        }
+        this.telefono = (telefono != null) ? telefono.trim() : null;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        if (estado == null || estado.trim().isEmpty()) {
+            throw new IllegalArgumentException("El estado es obligatorio.");
+        }
+        // Validación contra los valores definidos en BD: Activo, Inactivo, etc.
+        String estadoLimpio = estado.trim();
+        if (!estadoLimpio.equals("Activo") && !estadoLimpio.equals("Inactivo")) {
+            // Se puede expandir esta lista si hay más estados
+            throw new IllegalArgumentException("Estado inválido. Solo se permite 'Activo' o 'Inactivo'.");
+        }
+        this.estado = estadoLimpio;
+    }
+
 
     public String getUsuarioLogin() {
         return usuarioLogin;

@@ -16,12 +16,17 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
     }
 
     private Trabajador extraerTrabajadorDeResultSet(ResultSet rs) throws SQLException {
-        // extrae los datos básicos del trabajador
+        // ACTUALIZADO: extrae AHORA todos los campos del trabajador
         return new Trabajador(
                 rs.getInt("TrabajadorID"),
                 rs.getString("Nombre"),
+                rs.getString("Apellido"),  // NUEVO
+                rs.getString("DNI"),       // NUEVO
                 rs.getString("UsuarioLogin"),
                 rs.getInt("RolID"),
+                rs.getString("Email"),     // NUEVO
+                rs.getString("Telefono"),  // NUEVO
+                rs.getString("Estado"),    // NUEVO
                 rs.getTimestamp("FechaRegistro")
         );
     }
@@ -36,21 +41,27 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
             throw new RuntimeException("Error al generar el hash de la contraseña.");
         }
 
-        // Asume que la tabla Trabajadores tiene las columnas ContrasenaHash y Salt (VARBINARY)
-        String sql = "INSERT INTO Trabajadores (Nombre, UsuarioLogin, ContrasenaHash, Salt, RolID, FechaRegistro) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        // 2. QUERY ACTUALIZADA: Incluye Apellido, DNI, Email, Telefono, Estado
+        String sql = "INSERT INTO Trabajadores (Nombre, Apellido, DNI, UsuarioLogin, ContrasenaHash, Salt, RolID, Email, Telefono, Estado, FechaRegistro) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, trabajador.getNombre());
-            stmt.setString(2, trabajador.getUsuarioLogin());
+            stmt.setString(2, trabajador.getApellido());    // NUEVO
+            stmt.setString(3, trabajador.getDni());         // NUEVO
+            stmt.setString(4, trabajador.getUsuarioLogin());
 
             // Usamos setBytes para los datos de seguridad (VARBINARY)
-            stmt.setBytes(3, contrasenaHash);
-            stmt.setBytes(4, salt);
+            stmt.setBytes(5, contrasenaHash);
+            stmt.setBytes(6, salt);
 
-            stmt.setInt(5, trabajador.getRolID());
+            stmt.setInt(7, trabajador.getRolID());
+            stmt.setString(8, trabajador.getEmail());       // NUEVO
+            stmt.setString(9, trabajador.getTelefono());    // NUEVO
+            stmt.setString(10, trabajador.getEstado());     // NUEVO
 
-            stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+            // FechaRegistro se maneja en la DB con DEFAULT, pero aquí la insertamos explícitamente como buena práctica
+            stmt.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -65,6 +76,7 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
 
     @Override
     public Trabajador obtenerPorUsuarioLogin(String usuarioLogin) {
+        // La consulta SELECT * está bien, pero aseguramos la extracción completa
         String sql = "SELECT * FROM Trabajadores WHERE UsuarioLogin = ?";
         Trabajador trabajador = null;
 
@@ -72,7 +84,7 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
             stmt.setString(1, usuarioLogin);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // 1. Extraer los datos básicos
+                    // 1. Extraer todos los datos (incluyendo nuevos)
                     trabajador = extraerTrabajadorDeResultSet(rs);
 
                     // 2. Extraer el HASH y el SALT y asignarlos al objeto
@@ -84,7 +96,7 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
             System.err.println("Error al obtener Trabajador por UsuarioLogin: " + e.getMessage());
             e.printStackTrace();
         }
-        return trabajador; // Retorna el trabajador con Hash y Salt para la verificación
+        return trabajador;
     }
 
 
@@ -92,13 +104,17 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
 
     @Override
     public void actualizar(Trabajador trabajador) {
-        // No se permite actualizar el Hash/Salt aquí. Solo datos básicos.
-        String sql = "UPDATE Trabajadores SET Nombre = ?, RolID = ? WHERE TrabajadorID = ?";
+        String sql = "UPDATE Trabajadores SET Nombre = ?, Apellido = ?, DNI = ?, RolID = ?, Email = ?, Telefono = ?, Estado = ? WHERE TrabajadorID = ?";
 
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, trabajador.getNombre());
-            stmt.setInt(2, trabajador.getRolID());
-            stmt.setInt(3, trabajador.getTrabajadorID());
+            stmt.setString(2, trabajador.getApellido());
+            stmt.setString(3, trabajador.getDni());
+            stmt.setInt(4, trabajador.getRolID());
+            stmt.setString(5, trabajador.getEmail());
+            stmt.setString(6, trabajador.getTelefono());
+            stmt.setString(7, trabajador.getEstado());
+            stmt.setInt(8, trabajador.getTrabajadorID());
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al actualizar Trabajador: " + e.getMessage());
