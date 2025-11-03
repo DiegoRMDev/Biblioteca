@@ -4,6 +4,7 @@ import org.biblioteca.entities.Rol;
 import org.biblioteca.entities.Trabajador;
 import org.biblioteca.services.RolService;
 import org.biblioteca.services.TrabajadorService;
+import org.biblioteca.controller.TrabajadorController;
 
 import javax.swing.*;
 import java.util.List;
@@ -23,18 +24,18 @@ public class EditorTrabajador extends JDialog {
     private JTextField txtTelefono;
     private JComboBox<String> cboEstado;
 
-    private TrabajadorService trabajadorService;
-    private RolService rolService;
-    private Trabajador trabajadorAEditar;
-
-
+    private final TrabajadorController trabajadorController;
+    private final RolService rolService;
+    private final Trabajador trabajadorAEditar;
     private final boolean esCreacion;
 
 
-    public EditorTrabajador(JFrame parent, TrabajadorService trabajadorService, RolService rolService, Trabajador trabajador) {
+    public EditorTrabajador(JFrame parent, TrabajadorController trabajadorController, RolService rolService, Trabajador trabajador) {
         super(parent, true);
-        this.trabajadorService = trabajadorService;
-        this.rolService = rolService;
+
+        this.trabajadorController = trabajadorController;
+        this.rolService = rolService; // Mantenemos el RolService para cargar el combo de roles (lógica de UI)
+
         this.trabajadorAEditar = trabajador;
         this.esCreacion = (trabajador == null);
 
@@ -44,16 +45,14 @@ public class EditorTrabajador extends JDialog {
         setLocationRelativeTo(parent);
 
         cargarRoles();
-        cargarEstados(); // Cargar el ComboBox de estado
+        cargarEstados();
 
         if (!esCreacion) {
             poblarFormulario();
-            // En modo edición
-            txtUsuarioLogin.setEnabled(false); // No se edita el usuario
-            txtDni.setEnabled(false);          // No se edita el DNI
+            txtUsuarioLogin.setEnabled(false);
+            txtDni.setEnabled(false);
             txtContrasena.setText("");
         } else {
-            // En modo creación
             txtContrasena.setText("");
         }
 
@@ -113,35 +112,15 @@ public class EditorTrabajador extends JDialog {
         }
 
         try {
-            if (esCreacion) {
-                if (contrasena.isEmpty()) {
-                    throw new IllegalArgumentException("La contraseña es obligatoria al crear un nuevo trabajador.");
-                }
+            String mensajeExito = trabajadorController.procesarGuardado(
+                    trabajadorAEditar, nombre, apellido, dni, usuarioLogin,
+                    contrasena, rolSeleccionado.getRolID(), email,
+                    telefono, estado
+            );
 
-                trabajadorService.registrarTrabajador(
-                        nombre, apellido, dni, usuarioLogin, contrasena,
-                        rolSeleccionado.getRolID(), email, telefono
-                );
-                JOptionPane.showMessageDialog(this, "Trabajador registrado con éxito.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-
-
-            } else {
-
-                trabajadorAEditar.setNombre(nombre);
-                trabajadorAEditar.setApellido(apellido);
-                trabajadorAEditar.setEmail(email);
-                trabajadorAEditar.setTelefono(telefono);
-                trabajadorAEditar.setRolID(rolSeleccionado.getRolID());
-                trabajadorAEditar.setEstado(estado);
-
-                if (!contrasena.isEmpty()) {
-                    trabajadorService.actualizarContrasena(trabajadorAEditar.getTrabajadorID(), contrasena);
-                }
-
-                trabajadorService.actualizarDatos(trabajadorAEditar);
-                JOptionPane.showMessageDialog(this, "Datos del trabajador actualizados con éxito.", "Edición Exitosa", JOptionPane.INFORMATION_MESSAGE);
-
-            }
+            JOptionPane.showMessageDialog(this, mensajeExito,
+                    esCreacion ? "Registro Exitoso" : "Edición Exitosa",
+                    JOptionPane.INFORMATION_MESSAGE);
 
             dispose();
 

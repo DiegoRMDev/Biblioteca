@@ -1,5 +1,6 @@
 package org.biblioteca.presentacion;
 
+import org.biblioteca.controller.TrabajadorController;
 import org.biblioteca.entities.Trabajador;
 import org.biblioteca.services.RolService;
 import org.biblioteca.services.TrabajadorService;
@@ -19,30 +20,26 @@ public class GestionTrabajador extends JPanel {
     private JButton btnEliminar;
 
     private DefaultTableModel modeloTabla;
-    private TrabajadorService trabajadorService;
+    private final TrabajadorController trabajadorController;
+    private final RolService rolService;
 
     public GestionTrabajador() {
-        this.trabajadorService = new TrabajadorService();
-
-
-        // 1. Configuración de Layout
+        TrabajadorService trabajadorService = new TrabajadorService();
+        this.rolService = new RolService();
+        this.trabajadorController = new TrabajadorController(trabajadorService, rolService);
         this.setLayout(new BorderLayout());
         this.add(mainPanel, BorderLayout.CENTER);
 
-        // 2. Aplicar permisos CRUD
         aplicarPermisosCRUD();
 
-        // 3. Configurar Listeners
         btnNuevo.addActionListener(e -> abrirDialogoEditor(null));
         btnEditar.addActionListener(e -> editarTrabajadorSeleccionado());
         btnEliminar.addActionListener(e -> eliminarTrabajadorSeleccionado());
 
-        // 4. Cargar datos
         actualizarTabla();
     }
 
     private void aplicarPermisosCRUD() {
-        // Solo el Administrador puede crear, editar o eliminar trabajadores
         if (!SessionManager.esAdministrador()) {
             btnNuevo.setEnabled(false);
             btnEditar.setEnabled(false);
@@ -51,19 +48,20 @@ public class GestionTrabajador extends JPanel {
     }
 
     public void actualizarTabla() {
-        modeloTabla.setRowCount(0); // Limpiar la tabla
-        List<Trabajador> trabajadores = trabajadorService.listarTrabajadores();
+        modeloTabla.setRowCount(0);
+
+        List<Trabajador> trabajadores = trabajadorController.listarTrabajadores();
+
         for (Trabajador t : trabajadores) {
-            // **MODIFICACIÓN AQUÍ:** Incluyendo Apellido, DNI, Email y Estado.
             modeloTabla.addRow(new Object[]{
                     t.getTrabajadorID(),
                     t.getNombre(),
-                    t.getApellido(),       // NUEVO
-                    t.getDni(),            // NUEVO
+                    t.getApellido(),
+                    t.getDni(),
                     t.getUsuarioLogin(),
-                    t.getEmail(),          // NUEVO
+                    t.getEmail(),
                     t.getRolID(),
-                    t.getEstado(),         // NUEVO
+                    t.getEstado(),
                     t.getFechaRegistro()
             });
         }
@@ -71,8 +69,8 @@ public class GestionTrabajador extends JPanel {
 
     private void abrirDialogoEditor(Trabajador trabajador) {
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        // El diálogo necesita el servicio de Trabajador y el servicio de Rol (para el ComboBox)
-        EditorTrabajador dialogo = new EditorTrabajador(parentFrame, trabajadorService, new RolService(), trabajador);
+
+        EditorTrabajador dialogo = new EditorTrabajador(parentFrame, this.trabajadorController, this.rolService, trabajador);
         dialogo.setVisible(true);
         actualizarTabla();
     }
@@ -85,8 +83,7 @@ public class GestionTrabajador extends JPanel {
         }
         int trabajadorID = (int) modeloTabla.getValueAt(fila, 0);
 
-
-        Trabajador trabajadorAEditar = trabajadorService.obtenerPorId(trabajadorID);
+        Trabajador trabajadorAEditar = trabajadorController.obtenerPorId(trabajadorID);
 
         if (trabajadorAEditar != null) {
             abrirDialogoEditor(trabajadorAEditar);
@@ -105,11 +102,10 @@ public class GestionTrabajador extends JPanel {
         if (confirmacion == JOptionPane.YES_OPTION) {
             int trabajadorID = (int) modeloTabla.getValueAt(fila, 0);
             try {
-                trabajadorService.eliminarTrabajador(trabajadorID);
+                trabajadorController.eliminarTrabajador(trabajadorID);
                 actualizarTabla();
                 JOptionPane.showMessageDialog(this, "Trabajador eliminado con éxito.", "Eliminación", JOptionPane.INFORMATION_MESSAGE);
             } catch (RuntimeException ex) {
-                // Capturar errores de BD, como restricciones de clave foránea (FK)
                 JOptionPane.showMessageDialog(this, "Error al eliminar: El trabajador podría tener registros asociados.", "Error de Persistencia", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
@@ -117,15 +113,12 @@ public class GestionTrabajador extends JPanel {
     }
 
     private void createUIComponents() {
-        // **MODIFICACIÓN AQUÍ:**
-        // 1. Inicializamos el modelo con las nuevas columnas
         modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Apellido", "DNI", "Usuario Login", "Email", "Rol ID", "Estado", "Fecha Registro"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        // 2. Creamos la JTable y le asignamos el modelo
         tablaTrabajadores = new JTable(modeloTabla);
     }
 
