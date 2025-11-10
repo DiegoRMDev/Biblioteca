@@ -76,8 +76,8 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
 
     @Override
     public Trabajador obtenerPorUsuarioLogin(String usuarioLogin) {
-        // La consulta SELECT * está bien, pero aseguramos la extracción completa
-        String sql = "SELECT * FROM Trabajadores WHERE UsuarioLogin = ?";
+
+        String sql = "SELECT * FROM Trabajadores WHERE UsuarioLogin = ? COLLATE Latin1_General_CS_AS";
         Trabajador trabajador = null;
 
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
