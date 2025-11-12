@@ -1,0 +1,75 @@
+package org.biblioteca.services;
+
+import org.biblioteca.dao.PrestamoDAO;
+import org.biblioteca.dao.PrestamoDAOImpl;
+import org.biblioteca.entities.Prestamo;
+import org.biblioteca.entities.PrestamoDetalle;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
+
+public class PrestamoService {
+
+    private PrestamoDAO prestamoDAO;
+
+    public PrestamoService() {
+        this.prestamoDAO = new PrestamoDAOImpl();
+    }
+
+    public void registrarPrestamo(Prestamo prestamo, List<PrestamoDetalle> detalles) throws Exception {
+
+        if (prestamo.getLectorID() <= 0) {
+            throw new IllegalArgumentException("Debe seleccionar un lector.");
+        }
+        if (prestamo.getTrabajadorID() <= 0) {
+            throw new IllegalArgumentException("Error de sesión, no se encontró al trabajador.");
+        }
+        if (prestamo.getFechaDevolucionPrevista().before(prestamo.getFechaPrestamo())) {
+            throw new IllegalArgumentException("La fecha de devolución no puede ser anterior a la fecha del préstamo.");
+        }
+        if (detalles == null || detalles.isEmpty()) {
+            throw new IllegalArgumentException("El préstamo debe tener al menos un libro.");
+        }
+
+        try {
+            prestamoDAO.insertar(prestamo, detalles);
+        } catch (SQLException e) {
+            // Capturamos el error de la BD (ej. el trigger de "sin stock")
+            if (e.getMessage().contains("No hay suficiente stock")) {
+                throw new Exception("No hay suficiente stock para uno de los libros seleccionados.");
+            } else {
+                throw new Exception("Error de base de datos al registrar el préstamo: " + e.getMessage());
+            }
+        }
+    }
+
+    public void registrarDevolucion(int prestamoID, Timestamp fechaDevolucion) throws Exception {
+        // Ahora esto funciona gracias al DAO completo
+        Prestamo prestamo = prestamoDAO.obtenerPorId(prestamoID);
+        if (prestamo == null) {
+            throw new Exception("No se encontró el préstamo con ID: " + prestamoID);
+        }
+        if (prestamo.getFechaDevolucionReal() != null) {
+            throw new Exception("Este préstamo ya fue devuelto anteriormente.");
+        }
+
+        prestamo.setFechaDevolucionReal(fechaDevolucion);
+
+        try {
+            // El DAO solo necesita la fecha real, el trigger se encarga del resto
+            prestamoDAO.actualizar(prestamo);
+        } catch (SQLException e) {
+            throw new Exception("Error de base de datos al registrar la devolución: " + e.getMessage());
+        }
+    }
+
+    public List<Prestamo> listarPrestamos() {
+
+        return prestamoDAO.obtenerTodos();
+    }
+
+    public Prestamo buscarPrestamoPorId(int id) {
+
+        return prestamoDAO.obtenerPorId(id);
+    }
+}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionPrestamo">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <scrollpane id="f567b" binding="centralPanel">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="f13de" class="javax.swing.JTable" binding="tablaPrestamos" custom-create="true">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+      <grid id="c6d7f" binding="panelInferio" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="ca8a2" class="javax.swing.JButton" binding="btnNuevoPrestamo">
+            <constraints/>
+            <properties>
+              <text value="Nuevo Prestamo"/>
+            </properties>
+          </component>
+          <component id="5b4b4" class="javax.swing.JButton" binding="btnVerDetalle">
+            <constraints/>
+            <properties>
+              <text value="Ver Detalle"/>
+            </properties>
+          </component>
+          <component id="44c77" class="javax.swing.JButton" binding="btnRegistrarDevol">
+            <constraints/>
+            <properties>
+              <text value="Registrar Devolucion"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

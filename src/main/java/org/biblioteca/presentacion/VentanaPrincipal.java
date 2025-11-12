@@ -80,7 +80,7 @@ public class VentanaPrincipal extends JFrame {
         btnLectores.addActionListener(e -> abrirVista("Gestión de Lectores", new GestionLector()));
 
         // Botón PRÉSTAMOS (Placeholder)
-        //btnPrestamos.addActionListener(e -> abrirVista("Gestión de Préstamos", new JPanel()));
+        btnPrestamos.addActionListener(e -> abrirVista("Gestión de Préstamos", new GestionPrestamo()));
 
         // Botón DEVOLUCIONES (Placeholder)
         //btnDevoluciones.addActionListener(e -> abrirVista("Gestión de Devoluciones", new JPanel()));
