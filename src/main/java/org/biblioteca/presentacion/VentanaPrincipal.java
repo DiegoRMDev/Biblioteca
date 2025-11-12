@@ -96,6 +96,17 @@ public class VentanaPrincipal extends JFrame {
                 intentarCerrarSesion();
             }
         });
+        // 4. LISTENER PARA ACTUALIZACIÓN DE PESTAÑAS
+        contentPanel.addChangeListener(e -> {
+            // Obtener el componente (JPanel) actualmente seleccionado
+            java.awt.Component selected = contentPanel.getSelectedComponent();
+
+            // Verificar si el componente implementa la interfaz Actualizable
+            if (selected instanceof Actualizable) {
+                System.out.println("DEBUG: Refrescando vista: " + contentPanel.getTitleAt(contentPanel.getSelectedIndex()));
+                ((Actualizable) selected).actualizarDatos();
+            }
+        });
     }
 
     /**
