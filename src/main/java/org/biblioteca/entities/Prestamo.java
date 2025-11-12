@@ -17,6 +17,10 @@ public class Prestamo {
     // Campo para la relación con los detalles (PrestamoDetalle)
     private List<PrestamoDetalle> detalles;
 
+
+    private String lectorNombre;
+    private String trabajadorNombre;
+
     public Prestamo() {
     }
 
@@ -56,6 +60,8 @@ public class Prestamo {
     public int getLectorID() {
         return lectorID;
     }
+
+
 
     /**
      * Valida y establece el ID del Lector. (NOT NULL, ID positivo)
@@ -159,20 +165,24 @@ public class Prestamo {
         String cleanEstado = estado.trim();
 
         // Regla de Negocio (replicando el CHECK constraint de la BD)
-        final List<String> ESTADOS_PERMITIDOS = List.of("Activo", "Completado", "Vencido");
+        // Antes: List.of("Activo", "Completado", "Vencido")
+        // Ahora (Correcto):
+        final List<String> ESTADOS_PERMITIDOS = List.of("Pendiente", "Devuelto", "Retrasado");
 
         if (!ESTADOS_PERMITIDOS.contains(cleanEstado)) {
-            throw new IllegalArgumentException("El Estado debe ser 'Activo', 'Completado' o 'Vencido'.");
+            // Actualizamos también el mensaje de error
+            throw new IllegalArgumentException("El Estado debe ser 'Pendiente', 'Devuelto' o 'Retrasado'.");
         }
 
         this.estado = cleanEstado;
     }
 
-    public List<PrestamoDetalle> getDetalles() {
-        return detalles;
-    }
+    public List<PrestamoDetalle> getDetalles() { return detalles; }
+    public void setDetalles(List<PrestamoDetalle> detalles) { this.detalles = detalles; }
 
-    public void setDetalles(List<PrestamoDetalle> detalles) {
-        this.detalles = detalles;
-    }
+    public String getLectorNombre() { return lectorNombre; }
+    public void setLectorNombre(String lectorNombre) { this.lectorNombre = lectorNombre; }
+
+    public String getTrabajadorNombre() { return trabajadorNombre; }
+    public void setTrabajadorNombre(String trabajadorNombre) { this.trabajadorNombre = trabajadorNombre; }
 }
