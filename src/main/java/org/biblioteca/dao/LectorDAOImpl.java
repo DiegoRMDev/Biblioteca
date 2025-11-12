@@ -1,6 +1,7 @@
 package org.biblioteca.dao;
 
 import org.biblioteca.entities.Lector;
+import org.biblioteca.exception.LectorConPrestamoException;
 import org.biblioteca.util.DBConnection;
 
 import java.sql.*;
@@ -63,7 +64,11 @@ public class LectorDAOImpl implements LectorDAO {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
+            if (e.getErrorCode() == 547 || e.getMessage().contains("REFERENCE constraint")) {
+                throw new LectorConPrestamoException("No se puede eliminar el Lector (ID: " + id + ") porque tiene préstamos asociados. Elimine los préstamos primero o considere inactivarlo.", e);
+            }
             e.printStackTrace();
+            throw new RuntimeException("Error de persistencia en la base de datos.", e);
         }
     }
 
