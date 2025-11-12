@@ -18,12 +18,18 @@ public class ProveedorDAOImpl implements ProveedorDAO {
     @Override
     public void insertar(Proveedor proveedor) {
         String sql = "INSERT INTO Proveedores (Nombre, Direccion, Telefono, Email) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexion.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, proveedor.getNombre());
             stmt.setString(2, proveedor.getDireccion());
             stmt.setString(3, proveedor.getTelefono());
             stmt.setString(4, proveedor.getEmail());
             stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    // Asignar el ID de vuelta al objeto Proveedor
+                    proveedor.setProveedorID(rs.getInt(1));
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

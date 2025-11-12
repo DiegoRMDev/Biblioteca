@@ -18,13 +18,21 @@ public class LectorDAOImpl implements LectorDAO {
     public void insertar(Lector lector) {
 
         String sql = "INSERT INTO Lectores (DNI, Nombre, Direccion, Telefono, Email) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexion.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, lector.getDni());
             stmt.setString(2, lector.getNombre());
             stmt.setString(3, lector.getDireccion());
             stmt.setString(4, lector.getTelefono());
             stmt.setString(5, lector.getEmail());
             stmt.executeUpdate();
+
+            // 2. Recuperar la clave generada
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    // 3. Asignar el ID generado de vuelta al objeto Lector
+                    lector.setLectorID(rs.getInt(1)); // ¡Esto corrige el error del ID=0!
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

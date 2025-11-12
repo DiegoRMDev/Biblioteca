@@ -45,7 +45,7 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
         String sql = "INSERT INTO Trabajadores (Nombre, Apellido, DNI, UsuarioLogin, ContrasenaHash, Salt, RolID, Email, Telefono, Estado, FechaRegistro) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexion.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, trabajador.getNombre());
             stmt.setString(2, trabajador.getApellido());    // NUEVO
             stmt.setString(3, trabajador.getDni());         // NUEVO
@@ -64,6 +64,12 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
             stmt.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
 
             stmt.executeUpdate();
+            // CAMBIO 2: Recuperar y asignar la clave generada
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    trabajador.setTrabajadorID(rs.getInt(1)); // ¡Esto corrige el error del ID=0!
+                }
+            }
         } catch (SQLException e) {
             System.err.println("Error al insertar Trabajador: " + e.getMessage());
             e.printStackTrace();
