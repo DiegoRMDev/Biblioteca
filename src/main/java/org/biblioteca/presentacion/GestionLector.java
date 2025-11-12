@@ -1,6 +1,7 @@
 package org.biblioteca.presentacion;
 
 import org.biblioteca.entities.Lector;
+import org.biblioteca.exception.LectorConPrestamoException;
 import org.biblioteca.services.LectorService;
 
 import javax.swing.*;
@@ -77,10 +78,32 @@ public class GestionLector extends JPanel{
             return;
         }
         int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar a este lector?", "Confirmar", JOptionPane.YES_NO_OPTION);
+
         if (confirm == JOptionPane.YES_OPTION) {
             int lectorId = (int) modeloTabla.getValueAt(fila, 0);
-            lectorService.eliminarLector(lectorId);
-            actualizarTabla();
+
+            try {
+                // Intenta la eliminación. Si tiene historial, el DAO lanzará la LectorConPrestamoException.
+                lectorService.eliminarLector(lectorId);
+
+                // Si tiene éxito
+                actualizarTabla();
+                JOptionPane.showMessageDialog(this, "Lector eliminado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (LectorConPrestamoException ex) {
+                JOptionPane.showMessageDialog(this,
+                        ex.getMessage(), // Muestra el mensaje detallado
+                        "Error de Eliminación",
+                        JOptionPane.ERROR_MESSAGE);
+
+            } catch (Exception ex) {
+                // Captura cualquier otro error inesperado (ej. problema de conexión a la BD)
+                JOptionPane.showMessageDialog(this,
+                        "Ocurrió un error inesperado al intentar eliminar el lector.",
+                        "Error del Sistema",
+                        JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace(); // Imprime el error para depuración
+            }
         }
     }
 
