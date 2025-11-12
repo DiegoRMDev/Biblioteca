@@ -96,35 +96,29 @@ public class VentanaPrincipal extends JFrame {
                 intentarCerrarSesion();
             }
         });
-        // 4. LISTENER PARA ACTUALIZACIÓN DE PESTAÑAS
-        contentPanel.addChangeListener(e -> {
-            // Obtener el componente (JPanel) actualmente seleccionado
-            java.awt.Component selected = contentPanel.getSelectedComponent();
 
-            // Verificar si el componente implementa la interfaz Actualizable
-            if (selected instanceof Actualizable) {
-                System.out.println("DEBUG: Refrescando vista: " + contentPanel.getTitleAt(contentPanel.getSelectedIndex()));
-                ((Actualizable) selected).actualizarDatos();
-            }
-        });
     }
 
     /**
      * Gestiona la apertura de una vista en el JTabbedPane.
      */
     private void abrirVista(String titulo, JPanel vista) {
-        // 1. Verificar si la pestaña ya está abierta
-        if (vistasAbiertas.containsKey(titulo)) {
-            // Si ya existe, simplemente enfocarla (seleccionar la pestaña)
-            contentPanel.setSelectedComponent(vistasAbiertas.get(titulo));
+
+        int currentIndex = contentPanel.indexOfTab(titulo);
+        if (currentIndex != -1 && contentPanel.getSelectedIndex() == currentIndex) {
             return;
         }
+        contentPanel.removeAll();
 
-        // 2. Si no existe, añadirla
+        if (vista instanceof Actualizable) {
+            System.out.println("DEBUG: Refrescando vista: " + titulo);
+            ((Actualizable) vista).actualizarDatos();
+        }
+
+        // 4. Añadir la nueva vista
         contentPanel.addTab(titulo, vista);
-        vistasAbiertas.put(titulo, vista);
 
-        // 3. Enfocar la nueva pestaña
+        // 5. Enfocar la nueva pestaña (será la única que hay)
         contentPanel.setSelectedComponent(vista);
     }
 
