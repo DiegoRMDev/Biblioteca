@@ -76,28 +76,9 @@
               <text value="PRESTAMOS"/>
             </properties>
           </component>
-          <component id="cd306" class="javax.swing.JButton" binding="btnDevoluciones">
-            <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="0" bottom="20" right="0" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <background color="-14205835"/>
-              <borderPainted value="false"/>
-              <contentAreaFilled value="true"/>
-              <focusPainted value="false"/>
-              <font name="Arial Black" style="1"/>
-              <foreground color="-1"/>
-              <horizontalAlignment value="2"/>
-              <icon value="img/IconDevolucion.png"/>
-              <iconTextGap value="18"/>
-              <preferredSize width="200" height="54"/>
-              <text value="DEVOLUCIONES"/>
-            </properties>
-          </component>
           <component id="89a06" class="javax.swing.JButton" binding="btnReportes">
             <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <gridbag top="0" left="0" bottom="20" right="0" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
@@ -161,7 +142,7 @@
           </component>
           <component id="8d0e1" class="javax.swing.JButton" binding="cerrarSesionButton" default-binding="true">
             <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>

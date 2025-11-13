@@ -16,7 +16,6 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnTrabajadores;
     private JButton btnLibros;
     private JButton btnPrestamos;
-    private JButton btnDevoluciones;
     private JButton btnReportes;
     private JButton btnLectores;
     private JLabel logo;
@@ -43,7 +42,7 @@ public class VentanaPrincipal extends JFrame {
         setLocationRelativeTo(null);
 
         // Abrir la vista de inicio por defecto
-        abrirVista("Inicio", new JPanel()); // Reemplaza JPanel() con tu panel de inicio si lo tienes
+        abrirVista("Inicio", new DashboardReportes()); // Reemplaza JPanel() con tu panel de inicio si lo tienes
     }
 
     /**
@@ -68,7 +67,7 @@ public class VentanaPrincipal extends JFrame {
         // 2. Navegación (Conexión de botones)
 
         // Botón Inicio
-        btnInicio.addActionListener(e -> abrirVista("Inicio", new JPanel()));
+        btnInicio.addActionListener(e -> abrirVista("Inicio", new DashboardReportes()));
 
         // Botón TRABAJADORES (Placeholder - Reemplazar con new GestionTrabajadores() cuando esté lista)
         btnTrabajadores.addActionListener(e -> abrirVista("Gestión Administrativa", new GestionAdminDashboard()));
@@ -81,6 +80,8 @@ public class VentanaPrincipal extends JFrame {
 
         // Botón PRÉSTAMOS (Placeholder)
         btnPrestamos.addActionListener(e -> abrirVista("Gestión de Préstamos", new GestionPrestamo()));
+
+        btnInicio.addActionListener(e -> abrirVista("Dashboard de Reportes", new DashboardReportes()));
 
         // Botón DEVOLUCIONES (Placeholder)
         //btnDevoluciones.addActionListener(e -> abrirVista("Gestión de Devoluciones", new JPanel()));
@@ -115,6 +116,20 @@ public class VentanaPrincipal extends JFrame {
 
         // 3. Enfocar la nueva pestaña
         contentPanel.setSelectedComponent(vista);
+    }
+    public void refrescarVista(String titulo) {
+        //   Buscamos el panel en nuestro mapa de vistas abiertas
+        JPanel vista = vistasAbiertas.get(titulo);
+
+        //  . Verificamos que exista y que sea el tipo que queremos refrescar
+        if (vista instanceof DashboardReportes) {
+            System.out.println("Refrescando el Dashboard de 'Inicio'...");
+            // 3. Llamamos a su método público de recarga de datos
+            ((DashboardReportes) vista).cargarDatosDashboard();
+        }
+
+        // (Aquí podríamos añadir más 'else if' si otras vistas
+        // necesitaran refrescarse en el futuro)
     }
 
     private void intentarCerrarSesion() {

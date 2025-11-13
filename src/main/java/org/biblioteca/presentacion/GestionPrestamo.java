@@ -92,6 +92,11 @@ public class GestionPrestamo extends JPanel {
         EditorPrestamo dialogo = new EditorPrestamo(parentFrame, prestamoService);
          dialogo.setVisible(true);
         actualizarTabla();
+
+        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+        if (parentWindow instanceof VentanaPrincipal) {
+            ((VentanaPrincipal) parentWindow).refrescarVista("Inicio");
+        }
     }
 
     private void registrarDevolucion() {
@@ -116,6 +121,11 @@ public class GestionPrestamo extends JPanel {
                 prestamoService.registrarDevolucion(prestamoId, Timestamp.from(Instant.now()));
                 JOptionPane.showMessageDialog(this, "Devolución registrada exitosamente. El stock ha sido actualizado.");
                 actualizarTabla(); // La tabla mostrará el nuevo estado (Devuelto o Retrasado) y la multa si aplica
+
+                Window parentWindow = SwingUtilities.getWindowAncestor(this);
+                if (parentWindow instanceof VentanaPrincipal) {
+                    ((VentanaPrincipal) parentWindow).refrescarVista("Inicio");
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error al registrar la devolución: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }

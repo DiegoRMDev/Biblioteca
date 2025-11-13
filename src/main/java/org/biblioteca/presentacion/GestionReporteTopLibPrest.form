@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionReporteTopLibPrest">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="ada5e" binding="panelFiltros" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="521cc" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Mes:"/>
+            </properties>
+          </component>
+          <component id="1bd5d" class="javax.swing.JSpinner" binding="spinnerMes">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="ec83a" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Año:"/>
+            </properties>
+          </component>
+          <component id="1aa5c" class="javax.swing.JSpinner" binding="spinnerAnio">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="aeabf" class="javax.swing.JButton" binding="btnGenerar">
+            <constraints/>
+            <properties>
+              <text value="Generar Reporte"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>
