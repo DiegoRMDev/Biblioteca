@@ -83,7 +83,9 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
     @Override
     public Trabajador obtenerPorUsuarioLogin(String usuarioLogin) {
 
-        String sql = "SELECT * FROM Trabajadores WHERE UsuarioLogin = ? COLLATE Latin1_General_CS_AS";
+        String sql = "SELECT t.*, r.NombreRol FROM Trabajadores t " +
+                "INNER JOIN Roles r ON t.RolID = r.RolID " +
+                "WHERE t.UsuarioLogin = ? COLLATE Latin1_General_CS_AS";
         Trabajador trabajador = null;
 
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
@@ -93,9 +95,14 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
                     // 1. Extraer todos los datos (incluyendo nuevos)
                     trabajador = extraerTrabajadorDeResultSet(rs);
 
-                    // 2. Extraer el HASH y el SALT y asignarlos al objeto
+
+                    // 2. Asignar el NombreRol obtenido del JOIN
+                    trabajador.setNombreRol(rs.getString("NombreRol"));
+
+                    // 3. Extraer el HASH y el SALT y asignarlos al objeto
                     trabajador.setContrasenaHash(rs.getBytes("ContrasenaHash"));
                     trabajador.setSalt(rs.getBytes("Salt"));
+
                 }
             }
         } catch (SQLException e) {
@@ -184,11 +191,19 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
     @Override
     public List<Trabajador> obtenerTodos() {
         List<Trabajador> trabajadores = new ArrayList<>();
-        String sql = "SELECT * FROM Trabajadores ORDER BY Nombre";
+        String sql = "SELECT t.*, r.NombreRol FROM Trabajadores t " +
+                "INNER JOIN Roles r ON t.RolID = r.RolID " +
+                "ORDER BY t.Nombre";
         try (Statement stmt = conexion.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                trabajadores.add(extraerTrabajadorDeResultSet(rs));
+                // 2. Extraer el trabajador (llenando todos los campos excepto NombreRol por ahora)
+                Trabajador t = extraerTrabajadorDeResultSet(rs);
+
+                // 3. ASIGNAR EL NOMBRE DEL ROL OBTENIDO DEL JOIN
+                t.setNombreRol(rs.getString("NombreRol"));
+
+                trabajadores.add(t);
             }
         } catch (SQLException e) {
             System.err.println("Error al obtener todos los Trabajadores: " + e.getMessage());

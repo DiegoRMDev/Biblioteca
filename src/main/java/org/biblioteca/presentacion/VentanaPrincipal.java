@@ -50,13 +50,18 @@ public class VentanaPrincipal extends JFrame {
      * Aplica la lógica de control de acceso basada en el rol.
      */
     private void configurarPermisos() {
-        // Ocultar botones que solo debe ver el Administrador
-        if (!SessionManager.esAdministrador()) {
-            btnTrabajadores.setVisible(false);
-            btnReportes.setVisible(false);
+        btnTrabajadores.setVisible(SessionManager.esAdministrador());
+
+        boolean puedeVerReportes = SessionManager.esAdministrador() || SessionManager.esBibliotecario();
+        btnReportes.setVisible(puedeVerReportes);
+
+
+        if (!puedeVerReportes && !SessionManager.esAdministrador()) {
+            btnLibros.setVisible(false);
+            btnLectores.setVisible(false);
+            btnPrestamos.setVisible(false);
         }
 
-        // Aquí puedes añadir más lógica de permisos si el Bibliotecario tiene restricciones
     }
 
     private void configurarListeners() {

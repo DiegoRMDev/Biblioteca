@@ -61,10 +61,12 @@ public class GestionTrabajador extends JPanel {
                     t.getApellido(),       // NUEVO
                     t.getDni(),            // NUEVO
                     t.getUsuarioLogin(),
+                    t.getNombreRol(),
+                    t.getTelefono(),
                     t.getEmail(),          // NUEVO
-                    t.getRolID(),
                     t.getEstado(),         // NUEVO
-                    t.getFechaRegistro()
+                    t.getFechaRegistro(),
+
             });
         }
     }
@@ -119,7 +121,7 @@ public class GestionTrabajador extends JPanel {
     private void createUIComponents() {
         // **MODIFICACIÓN AQUÍ:**
         // 1. Inicializamos el modelo con las nuevas columnas
-        modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Apellido", "DNI", "Usuario Login", "Email", "Rol ID", "Estado", "Fecha Registro"}, 0) {
+        modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Apellido", "DNI", "Usuario","Rol","Telefono", "Email", "Estado", "Fecha Registro"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
