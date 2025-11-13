@@ -15,8 +15,6 @@ public class GestionAdminDashboard extends JPanel {
         // Pestaña 2: Trabajadores (Placeholder para futuro desarrollo)
         tabbedPaneInterno.addTab("Trabajadores", null, new GestionTrabajador(), "Gestionar usuarios y roles del sistema");
 
-        // Pestaña 3: Roles (Placeholder para futuro desarrollo)
-        tabbedPaneInterno.addTab("Roles", null, new JPanel(), "Gestionar roles y permisos");
 
 
         this.add(tabbedPaneInterno, BorderLayout.CENTER);

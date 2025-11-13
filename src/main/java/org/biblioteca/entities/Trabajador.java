@@ -6,18 +6,19 @@ public class Trabajador {
 
     private int trabajadorID;
     private String nombre;
-    private String apellido;    // NUEVO
-    private String dni;         // NUEVO
+    private String apellido;
+    private String dni;
     private String usuarioLogin;
-    private String contrasena; // Contraseña plana, temporalmente usada para hashear en el DAO
+    private String contrasena;
     private int rolID;
-    private String email;       // NUEVO
-    private String telefono;    // NUEVO
-    private String estado;      // NUEVO
+    private String email;
+    private String telefono;
+    private String estado;
     private Timestamp fechaRegistro;
+    private String nombreRol;
 
-    private byte[] contrasenaHash; // Almacena el HASH (byte[]) de la BD
-    private byte[] salt;           // Almacena el SALT (byte[]) de la BD
+    private byte[] contrasenaHash;
+    private byte[] salt;
 
     public Trabajador() {
         this.estado = "Activo";
@@ -235,5 +236,12 @@ public class Trabajador {
 
     public void setSalt(byte[] salt) {
         this.salt = salt;
+    }
+    public String getNombreRol() {
+        return nombreRol;
+    }
+
+    public void setNombreRol(String nombreRol) {
+        this.nombreRol = nombreRol;
     }
 }
