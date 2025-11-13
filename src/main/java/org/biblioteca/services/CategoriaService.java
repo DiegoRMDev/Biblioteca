@@ -20,10 +20,8 @@ public class CategoriaService {
         try {
             Categoria nuevaCategoria = new Categoria(nombre, descripcion);
             categoriaDAO.insertar(nuevaCategoria);
-            System.out.println("Categoría registrada exitosamente.");
         } catch (IllegalArgumentException e) {
-            // Captura los errores de validación de tu clase Categoria
-            System.err.println("Error de validación: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -35,15 +33,13 @@ public class CategoriaService {
             categoriaExistente.setNombre(nuevoNombre);
             categoriaExistente.setDescripcion(nuevaDescripcion);
             categoriaDAO.actualizar(categoriaExistente);
-            System.out.println("Categoría actualizada exitosamente.");
         } catch (IllegalArgumentException e) {
-            System.err.println("Error de validación: " + e.getMessage());
+            throw e;
         }
     }
 
     public void eliminarCategoria(int id) {
         categoriaDAO.eliminar(id);
-        System.out.println("Categoría eliminada.");
     }
 
     public Categoria buscarCategoriaPorId(int id) {

@@ -84,6 +84,7 @@ public class PrestamoDAOImpl implements PrestamoDAO {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         prestamoID = rs.getInt(1);
+                        prestamo.setPrestamoID(prestamoID); // <-- ¡Línea agregada!
                     } else {
                         throw new SQLException("No se pudo obtener el ID del préstamo.");
                     }

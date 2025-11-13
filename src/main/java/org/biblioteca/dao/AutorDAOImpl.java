@@ -19,11 +19,16 @@ public class AutorDAOImpl implements  AutorDAO{
     @Override
     public void insertar(Autor autor) {
         String sql = "INSERT INTO Autores (Nombre, Apellido, Nacionalidad) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexion.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, autor.getNombre());
             stmt.setString(2, autor.getApellido());
             stmt.setString(3, autor.getNacionalidad());
             stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    autor.setAutorID(rs.getInt(1));
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
