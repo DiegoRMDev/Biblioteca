@@ -106,13 +106,26 @@ public class GestionTrabajador extends JPanel {
         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este trabajador?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
         if (confirmacion == JOptionPane.YES_OPTION) {
             int trabajadorID = (int) modeloTabla.getValueAt(fila, 0);
+
             try {
+                // Llama al servicio, que contiene la lógica de seguridad
                 trabajadorService.eliminarTrabajador(trabajadorID);
+
                 actualizarTabla();
                 JOptionPane.showMessageDialog(this, "Trabajador eliminado con éxito.", "Eliminación", JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (SecurityException ex) {
+                // CAPTURA LA EXCEPCIÓN DE SEGURIDAD (Admin eliminando Admin, o auto-eliminación)
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Seguridad", JOptionPane.ERROR_MESSAGE);
+
             } catch (RuntimeException ex) {
-                // Capturar errores de BD, como restricciones de clave foránea (FK)
-                JOptionPane.showMessageDialog(this, "Error al eliminar: El trabajador podría tener registros asociados.", "Error de Persistencia", JOptionPane.ERROR_MESSAGE);
+                // Capturar errores de BD (clave foránea, etc.)
+                JOptionPane.showMessageDialog(this, "Error al eliminar: El trabajador podría tener registros asociados o hubo un error de persistencia.", "Error de Persistencia", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+
+            } catch (Exception ex) {
+                // Capturar la Exception genérica (como "El trabajador a eliminar no existe")
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error de Eliminación", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
         }
