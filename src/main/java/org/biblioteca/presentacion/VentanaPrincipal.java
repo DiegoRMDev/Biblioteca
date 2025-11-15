@@ -51,6 +51,9 @@ public class VentanaPrincipal extends JFrame {
     private void configurarPermisos() {
         btnTrabajadores.setVisible(SessionManager.esAdministrador());
 
+        boolean esBibliotecario = SessionManager.esBibliotecario();
+        btnPrestamos.setVisible(esBibliotecario);
+
         boolean puedeVerReportes = SessionManager.esAdministrador() || SessionManager.esBibliotecario();
         btnReportes.setVisible(puedeVerReportes);
 
@@ -132,7 +135,7 @@ public class VentanaPrincipal extends JFrame {
         //  . Verificamos que exista y que sea el tipo que queremos refrescar
         if (vista instanceof DashboardReportes) {
             System.out.println("Refrescando el Dashboard de 'Inicio'...");
-            // 3. Llamamos a su método público de recarga de datos
+            // 3. Llamamos a su metodo público de recarga de datos
             ((DashboardReportes) vista).cargarDatosDashboard();
         }
 

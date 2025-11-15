@@ -18,6 +18,7 @@ public class GestionReportesDashboard extends JPanel {
 
         // Determinar si el usuario actual es Administrador
         boolean esAdmin = SessionManager.esAdministrador();
+        boolean puedeVerReportes = SessionManager.esAdministrador() || SessionManager.esBibliotecario(); // Ya definido en VentanaPrincipal
 
         // ====================================================
         // 1. REPORTE EXCLUSIVO DEL ADMINISTRADOR (RF-009 con filtros de fecha)
@@ -29,8 +30,16 @@ public class GestionReportesDashboard extends JPanel {
                     new GestionReporteTopLibPrest(), "Reporte analítico de libros más solicitados con filtros de fecha.");
         }
 
+        // ====================================================
+        // 2. REPORTE ACCESIBLE PARA AMBOS ROLES (Historial de Préstamos)
+        // ====================================================
 
-        // Pestaña 3: Historial de prestamos con filtros de rango de fechas y opcion de devolucion, prestamo o ambos (Ejemplo de otro reporte futuro)
+        if (puedeVerReportes) {
+            // Tanto Administrador como Bibliotecario pueden generar este reporte
+            tabbedPaneInterno.addTab("Historial de Préstamos", null,
+                    new GestionReporteHistorialPrestamos(), "Historial detallado de préstamos y devoluciones por rango de fechas y tipo de evento.");
+        }
+
 
         // Si no hay pestañas añadidas, se podría mostrar un mensaje.
         if (tabbedPaneInterno.getTabCount() > 0) {

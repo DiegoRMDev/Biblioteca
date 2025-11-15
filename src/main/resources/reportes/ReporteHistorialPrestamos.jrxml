@@ -1,0 +1,161 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="ReporteHistorialPrestamos" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="683ec50f-5e74-4e03-adf4-03236a4d8705">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="RegistroBibliotecaDB"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="FECHA_FIN" class="java.sql.Timestamp"/>
+	<parameter name="TIPO_EVENTO" class="java.lang.String"/>
+	<parameter name="PERIODO_TEXTO" class="java.lang.String"/>
+	<query language="sql"><![CDATA[SELECT
+    P.PrestamoID, 
+    L.Nombre AS NombreLector,
+    L.DNI AS DniLector, 
+    CONCAT(T.Nombre, ' ', T.Apellido) AS NombreTrabajador,
+    LB.Titulo AS TituloLibro,
+    PD.Cantidad AS CantidadLibro,
+    P.FechaPrestamo, 
+    P.FechaDevolucionPrevista, 
+    P.Estado AS TipoEvento, 
+    P.FechaDevolucionReal AS FechaDevolucion
+FROM
+    dbo.Prestamos P
+JOIN dbo.Lectores L ON P.LectorID = L.LectorID
+JOIN dbo.Trabajadores T ON P.TrabajadorID = T.TrabajadorID
+JOIN dbo.PrestamoDetalle PD ON P.PrestamoID = PD.PrestamoID
+JOIN dbo.Libros LB ON PD.LibroID = LB.LibroID
+WHERE
+    (
+        P.FechaPrestamo >= $P{FECHA_INICIO} AND P.FechaPrestamo < $P{FECHA_FIN}
+    )
+    AND (
+        $P{TIPO_EVENTO} = 'A' 
+        OR ($P{TIPO_EVENTO} = 'P' AND P.Estado = 'Pendiente')
+        OR ($P{TIPO_EVENTO} = 'D' AND P.Estado = 'Devuelto')
+        OR ($P{TIPO_EVENTO} = 'R' AND P.Estado = 'Retrasado')
+    )
+ORDER BY 
+    P.FechaPrestamo DESC, TituloLibro ASC]]></query>
+	<field name="PrestamoID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="PrestamoID"/>
+		<property name="com.jaspersoft.studio.field.label" value="PrestamoID"/>
+	</field>
+	<field name="NombreLector" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="NombreLector"/>
+		<property name="com.jaspersoft.studio.field.label" value="NombreLector"/>
+	</field>
+	<field name="DniLector" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DniLector"/>
+		<property name="com.jaspersoft.studio.field.label" value="DniLector"/>
+	</field>
+	<field name="NombreTrabajador" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="NombreTrabajador"/>
+		<property name="com.jaspersoft.studio.field.label" value="NombreTrabajador"/>
+	</field>
+	<field name="TituloLibro" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TituloLibro"/>
+		<property name="com.jaspersoft.studio.field.label" value="TituloLibro"/>
+	</field>
+	<field name="CantidadLibro" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="CantidadLibro"/>
+		<property name="com.jaspersoft.studio.field.label" value="CantidadLibro"/>
+	</field>
+	<field name="FechaPrestamo" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="FechaPrestamo"/>
+		<property name="com.jaspersoft.studio.field.label" value="FechaPrestamo"/>
+	</field>
+	<field name="FechaDevolucionPrevista" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="FechaDevolucionPrevista"/>
+		<property name="com.jaspersoft.studio.field.label" value="FechaDevolucionPrevista"/>
+	</field>
+	<field name="TipoEvento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TipoEvento"/>
+		<property name="com.jaspersoft.studio.field.label" value="TipoEvento"/>
+	</field>
+	<field name="FechaDevolucion" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="FechaDevolucion"/>
+		<property name="com.jaspersoft.studio.field.label" value="FechaDevolucion"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="60" splitType="Stretch">
+		<element kind="staticText" uuid="88a86a0b-11c7-4340-b48e-73c1c5a755d9" x="0" y="5" width="802" height="30" fontSize="20.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[HISTORIAL DE PRÉSTAMOS Y DEVOLUCIONES]]></text>
+		</element>
+		<element kind="textField" uuid="b45d58f3-42e6-4279-b883-752119d80d21" x="0" y="35" width="802" height="20" fontSize="14.0" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA[$P{PERIODO_TEXTO}]]></expression>
+		</element>
+	</title>
+	<pageHeader height="35" splitType="Stretch"/>
+	<columnHeader height="20" splitType="Stretch">
+		<element kind="staticText" uuid="e05060fa-553e-436f-a8c5-4424316718d7" mode="Opaque" x="0" y="0" width="35" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[ID]]></text>
+		</element>
+		<element kind="staticText" uuid="e6181710-5341-450f-a957-3f3640237731" mode="Opaque" x="35" y="0" width="50" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[EVENTO]]></text>
+		</element>
+		<element kind="staticText" uuid="d6f03e3a-965a-464a-995c-5989f50e8a7f" mode="Opaque" x="85" y="0" width="105" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" vTextAlign="Middle">
+			<text><![CDATA[ LECTOR]]></text>
+		</element>
+		<element kind="staticText" uuid="1d0e801b-9b4f-4d2c-8a1e-8e42f2b3c2e7" mode="Opaque" x="190" y="0" width="60" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[DNI]]></text>
+		</element>
+		<element kind="staticText" uuid="3d233157-1941-4c6e-939e-21473069152e" mode="Opaque" x="250" y="0" width="90" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" vTextAlign="Middle">
+			<text><![CDATA[ TRABAJADOR]]></text>
+		</element>
+		<element kind="staticText" uuid="6c99c595-6548-43d9-a785-5b871c4c1d76" mode="Opaque" x="340" y="0" width="180" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" vTextAlign="Middle">
+			<text><![CDATA[ TÍTULO DEL LIBRO]]></text>
+		</element>
+		<element kind="staticText" uuid="c24c2596-f99a-4712-ae31-e1239c4d29f8" mode="Opaque" x="520" y="0" width="40" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[CANT]]></text>
+		</element>
+		<element kind="staticText" uuid="192a2754-52d3-4908-9844-31f010f3c16f" mode="Opaque" x="560" y="0" width="82" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[F. PRÉSTAMO]]></text>
+		</element>
+		<element kind="staticText" uuid="55c65f2a-7977-44f2-985c-0975877c07b6" mode="Opaque" x="642" y="0" width="80" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[F. DEV. PREV.]]></text>
+		</element>
+		<element kind="staticText" uuid="90938b15-9c86-455b-8016-168a2d3c9066" mode="Opaque" x="722" y="0" width="80" height="20" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[F. DEV. REAL]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<element kind="textField" uuid="eb80611e-3235-45dc-80d1-146151f4768b" x="0" y="0" width="35" height="15" forecolor="#000000" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{PrestamoID}]]></expression>
+			</element>
+			<element kind="textField" uuid="dbedd1fe-2f29-4660-ac29-f15605706432" x="35" y="0" width="50" height="15" forecolor="#000000" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{TipoEvento}]]></expression>
+			</element>
+			<element kind="textField" uuid="733c3a75-de88-4301-af20-a301c6a92618" x="85" y="0" width="105" height="15" forecolor="#000000" fontSize="8.0" vTextAlign="Middle">
+				<expression><![CDATA[" " + $F{NombreLector}]]></expression>
+			</element>
+			<element kind="textField" uuid="603c734e-4f1b-410a-8d77-a8b27387d81a" x="190" y="0" width="60" height="15" forecolor="#000000" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{DniLector}]]></expression>
+			</element>
+			<element kind="textField" uuid="008f2691-2473-485b-a5f5-81bb05b6cf37" x="250" y="0" width="90" height="15" forecolor="#000000" fontSize="8.0" vTextAlign="Middle">
+				<expression><![CDATA[" " + $F{NombreTrabajador}]]></expression>
+			</element>
+			<element kind="textField" uuid="7fce14c7-ef67-4d83-a77c-2ae6e1ed9b7d" x="340" y="0" width="180" height="15" forecolor="#000000" fontSize="8.0" vTextAlign="Middle">
+				<expression><![CDATA[" " + $F{TituloLibro}]]></expression>
+			</element>
+			<element kind="textField" uuid="b95967a7-1a7d-4c5d-b9ea-013a12aeddd8" x="520" y="0" width="40" height="15" forecolor="#000000" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{CantidadLibro}]]></expression>
+			</element>
+			<element kind="textField" uuid="af8fd2cd-f3a7-4aca-a63e-124fb256cf6b" x="560" y="0" width="82" height="15" forecolor="#000000" fontSize="8.0" pattern="dd/MM/yyyy HH:mm" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{FechaPrestamo}]]></expression>
+			</element>
+			<element kind="textField" uuid="c2d0f0d2-05f7-4a00-b6a6-f33e08560032" x="642" y="0" width="80" height="15" forecolor="#000000" fontSize="8.0" pattern="dd/MM/yyyy HH:mm" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{FechaDevolucionPrevista}]]></expression>
+			</element>
+			<element kind="textField" uuid="d93c40e5-7977-44f2-985c-0975877c07b6" x="722" y="0" width="80" height="15" forecolor="#000000" fontSize="8.0" pattern="dd/MM/yyyy HH:mm" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{FechaDevolucion}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter height="20" splitType="Stretch">
+		<element kind="textField" uuid="559d4734-712f-410a-8a43-6c8466d795f9" x="702" y="0" width="100" height="20" fontSize="8.0" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA["Página " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+	</pageFooter>
+	<summary splitType="Stretch"/>
+</jasperReport>
