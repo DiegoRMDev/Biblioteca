@@ -126,27 +126,35 @@ public class EditorTrabajador extends JDialog {
 
 
             } else {
-
+                // 1. Aplicar datos al objeto (incluyendo el posible cambio de RolID)
                 trabajadorAEditar.setNombre(nombre);
                 trabajadorAEditar.setApellido(apellido);
                 trabajadorAEditar.setEmail(email);
                 trabajadorAEditar.setTelefono(telefono);
-                trabajadorAEditar.setRolID(rolSeleccionado.getRolID());
+                trabajadorAEditar.setRolID(rolSeleccionado.getRolID()); // <-- RolID que se valida en el servicio
                 trabajadorAEditar.setEstado(estado);
 
+                // 2. Intentar actualizar los datos (Valida la regla del cambio de Rol de Admin)
+                // Si hay SecurityException, se lanzará AQUÍ.
+                trabajadorService.actualizarDatos(trabajadorAEditar);
+
+                // 3. Si la actualización de datos tuvo éxito, actualizamos la contraseña si se cambió.
                 if (!contrasena.isEmpty()) {
                     trabajadorService.actualizarContrasena(trabajadorAEditar.getTrabajadorID(), contrasena);
                 }
 
-                trabajadorService.actualizarDatos(trabajadorAEditar);
                 JOptionPane.showMessageDialog(this, "Datos del trabajador actualizados con éxito.", "Edición Exitosa", JOptionPane.INFORMATION_MESSAGE);
-
             }
 
             dispose();
 
+        } catch (SecurityException ex) {
+            // CAPTURA la excepción del Servicio que prohíbe el cambio de Rol de Admin.
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Permiso", JOptionPane.ERROR_MESSAGE);
+
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, "Error de Validación: " + ex.getMessage(), "Datos Inválidos", JOptionPane.ERROR_MESSAGE);
+
         } catch (RuntimeException ex) {
             JOptionPane.showMessageDialog(this, "Error de Persistencia: El DNI o Usuario ya existe, o hubo un error en la base de datos.", "Error de Guardado", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();

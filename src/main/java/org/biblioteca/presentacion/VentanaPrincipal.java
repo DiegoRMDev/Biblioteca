@@ -49,20 +49,20 @@ public class VentanaPrincipal extends JFrame {
      * Aplica la lógica de control de acceso basada en el rol.
      */
     private void configurarPermisos() {
-        btnTrabajadores.setVisible(SessionManager.esAdministrador());
 
+        boolean esAdmin = SessionManager.esAdministrador();
         boolean esBibliotecario = SessionManager.esBibliotecario();
+
+        // Variable clave para permisos compartidos (Admin O Bibliotecario)
+        boolean puedeVerRecursosComunes = esAdmin || esBibliotecario;
+
+
+        btnTrabajadores.setVisible(puedeVerRecursosComunes);
+        btnLibros.setVisible(puedeVerRecursosComunes);
+        btnLectores.setVisible(puedeVerRecursosComunes);
+        btnReportes.setVisible(puedeVerRecursosComunes);
         btnPrestamos.setVisible(esBibliotecario);
 
-        boolean puedeVerReportes = SessionManager.esAdministrador() || SessionManager.esBibliotecario();
-        btnReportes.setVisible(puedeVerReportes);
-
-
-        if (!puedeVerReportes && !SessionManager.esAdministrador()) {
-            btnLibros.setVisible(false);
-            btnLectores.setVisible(false);
-            btnPrestamos.setVisible(false);
-        }
 
     }
 

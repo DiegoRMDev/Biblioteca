@@ -4,6 +4,7 @@ import org.biblioteca.dao.TrabajadorDAO;
 import org.biblioteca.dao.TrabajadorDAOImpl;
 import org.biblioteca.entities.Trabajador;
 import org.biblioteca.util.PasswordUtil;
+import org.biblioteca.util.SessionManager;
 
 import java.util.List;
 
@@ -69,17 +70,104 @@ public class TrabajadorService {
         return trabajadorDAO.obtenerTodos();
     }
 
-    public void actualizarDatos(Trabajador trabajador) throws IllegalArgumentException {
-        trabajadorDAO.actualizar(trabajador);
+    public void actualizarDatos(Trabajador trabajadorModificado) throws IllegalArgumentException, SecurityException {
+
+        Trabajador trabajadorOriginal = trabajadorDAO.obtenerPorId(trabajadorModificado.getTrabajadorID());
+
+        if (trabajadorOriginal == null) {
+            throw new IllegalArgumentException("El trabajador a modificar no existe.");
+        }
+
+        int idTrabajadorSesion = SessionManager.getCurrentTrabajador().getTrabajadorID();
+        int idTrabajadorAEditar = trabajadorModificado.getTrabajadorID();
+        boolean esTrabajadorOriginalAdmin = "Administrador".equalsIgnoreCase(trabajadorOriginal.getNombreRol());
+
+
+        // =========================================================================
+        // REGLA DE SEGURIDAD REFORZADA CON EXCEPCIÓN DE ESTADO
+        // =========================================================================
+
+        // 1. Si el usuario en sesión es Administrador y no se está auto-editando, Y el original es Administrador
+        if (SessionManager.esAdministrador() &&
+                idTrabajadorSesion != idTrabajadorAEditar &&
+                esTrabajadorOriginalAdmin)
+        {
+            // 2. VERIFICAR SI HAY OTROS CAMBIOS ADEMÁS DEL ESTADO
+
+            boolean soloSeCambioElEstado =
+                    // El RolID sigue siendo el mismo (Validación de rol)
+                    trabajadorOriginal.getRolID() == trabajadorModificado.getRolID() &&
+
+                            // Nombre y Apellido no han cambiado
+                            trabajadorOriginal.getNombre().equals(trabajadorModificado.getNombre()) &&
+                            trabajadorOriginal.getApellido().equals(trabajadorModificado.getApellido()) &&
+
+                            // Email y Teléfono no han cambiado (usar equals para Strings, y considerar nulos)
+                            (trabajadorOriginal.getEmail() == null ? trabajadorModificado.getEmail() == null : trabajadorOriginal.getEmail().equals(trabajadorModificado.getEmail())) &&
+                            (trabajadorOriginal.getTelefono() == null ? trabajadorModificado.getTelefono() == null : trabajadorOriginal.getTelefono().equals(trabajadorModificado.getTelefono())) &&
+
+                            // El estado SÍ ha cambiado
+                            !trabajadorOriginal.getEstado().equals(trabajadorModificado.getEstado());
+
+            // 3. Si SÓLO se cambió el estado, permitimos el paso
+            if (soloSeCambioElEstado) {
+                // No hacemos nada, el código continuará y llamará al DAO.
+                System.out.println("ADVERTENCIA DE SEGURIDAD: Administrador '" +
+                        SessionManager.getCurrentTrabajador().getUsuarioLogin() +
+                        "' cambió el estado a '" + trabajadorModificado.getEstado() +
+                        "' al Administrador '" + trabajadorOriginal.getUsuarioLogin() + "'.");
+            } else {
+                // 4. Si hay CUALQUIER otro cambio (rol, nombre, etc.) además del estado...
+                throw new SecurityException("Operación Prohibida: Un Administrador solo puede modificar el estado de otro Administrador.");
+            }
+        }
+
+        // Si pasa todas las validaciones (o es auto-edición), se procede.
+        trabajadorDAO.actualizar(trabajadorModificado);
     }
 
     public void actualizarContrasena(int trabajadorID, String nuevaContrasena) throws IllegalArgumentException {
+        Trabajador trabajadorOriginal = trabajadorDAO.obtenerPorId(trabajadorID);
+
+        if (trabajadorOriginal == null) {
+            throw new IllegalArgumentException("El trabajador a modificar no existe.");
+        }
+
+        int idTrabajadorSesion = SessionManager.getCurrentTrabajador().getTrabajadorID();
+
+        // REGLA DE SEGURIDAD: Admin NO puede cambiar la contraseña de OTRO Admin
+        if (SessionManager.esAdministrador()) {
+            boolean esTrabajadorOriginalAdmin = "Administrador".equalsIgnoreCase(trabajadorOriginal.getNombreRol());
+
+            if (idTrabajadorSesion != trabajadorID && esTrabajadorOriginalAdmin) {
+                // Bloqueo total para la contraseña de otros Admins.
+                throw new SecurityException("Operación Prohibida: Un Administrador no puede cambiar la contraseña de otro Administrador.");
+            }
+        }
+
         // Se podría validar la nuevaContrasena aquí antes de llamar al DAO
         trabajadorDAO.actualizarContrasena(trabajadorID, nuevaContrasena);
     }
 
-    public void eliminarTrabajador(int id) {
-        trabajadorDAO.eliminar(id);
+    public void eliminarTrabajador(int idTrabajadorAEliminar) throws SecurityException, Exception {
+        Trabajador trabajadorAEliminar = trabajadorDAO.obtenerPorId(idTrabajadorAEliminar);
+
+        if (trabajadorAEliminar == null) {
+            throw new Exception("El trabajador a eliminar no existe en la base de datos.");
+        }
+
+        // 1. REGLA: Un usuario no puede eliminarse a sí mismo.
+        if (SessionManager.isSesionActiva() && SessionManager.getCurrentTrabajador().getTrabajadorID() == idTrabajadorAEliminar) {
+            throw new SecurityException("Operación Prohibida: No puedes eliminar tu propia cuenta de sesión.");
+        }
+
+        // 2. REGLA: Un Administrador no puede eliminar a otro Administrador.
+        if (SessionManager.esAdministrador() && "Administrador".equalsIgnoreCase(trabajadorAEliminar.getNombreRol())) {
+            throw new SecurityException("Operación Prohibida: Un Administrador no puede eliminar a otro Administrador.");
+        }
+
+        // Si todas las validaciones pasan, se procede con la eliminación.
+        trabajadorDAO.eliminar(idTrabajadorAEliminar);
     }
 
     public Trabajador obtenerTrabajadorPorUsuarioLogin(String usuarioLogin) {
