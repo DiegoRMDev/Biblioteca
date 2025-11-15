@@ -1,0 +1,65 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="ReporteTopLibros" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f5fedfc6-d219-44ca-9089-5227c6776840">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="FECHA_FIN" class="java.sql.Timestamp"/>
+	<parameter name="PERIODO_TEXTO" class="java.lang.String"/>
+	<query language="SQL"><![CDATA[SELECT
+    l.Titulo,
+    SUM(pd.Cantidad) AS TotalPrestado
+FROM
+    PrestamoDetalle pd
+JOIN
+    Libros l ON pd.LibroID = l.LibroID
+JOIN
+    Prestamos p ON pd.PrestamoID = p.PrestamoID
+WHERE
+     p.FechaPrestamo >= $P{FECHA_INICIO}
+     AND p.FechaPrestamo < $P{FECHA_FIN}
+GROUP BY
+    l.Titulo
+ORDER BY
+    TotalPrestado DESC
+OFFSET 0 ROWS 
+FETCH NEXT 10 ROWS ONLY]]></query>
+	<field name="Titulo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Titulo"/>
+		<property name="com.jaspersoft.studio.field.label" value="Titulo"/>
+	</field>
+	<field name="TotalPrestado" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="TotalPrestado"/>
+		<property name="com.jaspersoft.studio.field.label" value="TotalPrestado"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="80" splitType="Stretch">
+		<element kind="staticText" uuid="e6d15b1a-289d-4720-a614-72b15e3b5037" x="0" y="5" width="555" height="40" fontSize="20.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[TOP LIBROS MÁS SOLICITADOS]]></text>
+		</element>
+		<element kind="textField" uuid="a6c533e4-8a1a-42c1-be56-9e6e0d9b1523" x="0" y="45" width="555" height="30" fontSize="14.0" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA[$P{PERIODO_TEXTO}]]></expression>
+		</element>
+	</title>
+	<pageHeader height="35" splitType="Stretch"/>
+	<columnHeader height="30" splitType="Stretch">
+		<element kind="staticText" uuid="35421a40-4519-45b3-a1d0-3e75f26f9274" mode="Opaque" x="20" y="0" width="350" height="30" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="12.0">
+			<text><![CDATA[TÍTULO DEL LIBRO]]></text>
+		</element>
+		<element kind="staticText" uuid="6530ccd3-ee5e-4dde-900f-dace00ab42fd" mode="Opaque" x="380" y="0" width="100" height="30" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="12.0" hTextAlign="Center">
+			<text><![CDATA[CANTIDAD]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<element kind="textField" uuid="2843aad6-207e-4f7d-9c2d-ada5d0cb0f30" x="20" y="0" width="350" height="20" fontSize="11.0">
+				<expression><![CDATA[$F{Titulo}]]></expression>
+			</element>
+			<element kind="textField" uuid="8bbb92eb-82ed-42c3-b26b-b3885cde96d5" x="380" y="0" width="100" height="20" fontSize="11.0" hTextAlign="Center">
+				<expression><![CDATA[$F{TotalPrestado}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>

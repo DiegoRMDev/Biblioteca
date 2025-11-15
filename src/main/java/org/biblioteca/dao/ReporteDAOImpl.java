@@ -1,6 +1,10 @@
 package org.biblioteca.dao;
 
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import org.biblioteca.util.DBConnection;
+
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -64,5 +68,27 @@ public class ReporteDAOImpl implements ReporteDAO{
             e.printStackTrace();
         }
         return resultado;
+    }
+
+    @Override
+    public JasperPrint generarHistorialPrestamos(InputStream reporteStream, Map<String, Object> parametros) throws Exception {
+        Connection conexion = null;
+        try {
+            // Obtener la conexión a la BD a través de la clase de utilidad
+            conexion = DBConnection.getConnection();
+            if (conexion == null || conexion.isClosed()) {
+                throw new RuntimeException("No se pudo obtener la conexión a la base de datos.");
+            }
+
+            // La lógica de llenado del reporte se mueve al DAO
+            // JasperReports utiliza esta conexión, el InputStream del reporte y los parámetros
+            return JasperFillManager.fillReport(reporteStream, parametros, conexion);
+        } catch (SQLException e) {
+            // Manejo específico de errores de base de datos
+            throw new SQLException("Error de DB al generar reporte Historial: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // Manejo de otros errores (ej. JRException)
+            throw new Exception("Error al llenar el reporte Historial: " + e.getMessage(), e);
+        }
     }
 }
