@@ -55,10 +55,14 @@ public class ReporteService {
             LocalDate primerDiaSiguienteMes = yearMonth.atEndOfMonth().plusDays(1);
             Timestamp fechaFin = Timestamp.valueOf(primerDiaSiguienteMes.atStartOfDay());
 
+            String nombreMes = primerDia.getMonth().getDisplayName(java.time.format.TextStyle.FULL, new java.util.Locale("es", "ES"));
+            String periodoTexto = "Período: " + nombreMes.substring(0, 1).toUpperCase() + nombreMes.substring(1).toLowerCase() + " de " + anio;
+
             //  Preparar los parámetros que la consulta SQL espera
             Map<String, Object> parametros = new HashMap<>();
             parametros.put("FECHA_INICIO", fechaInicio);
             parametros.put("FECHA_FIN", fechaFin);
+            parametros.put("PERIODO_TEXTO", periodoTexto);
 
             //  Llenar el reporte
             // Jasper usará la conexión, los parámetros y la consulta SQL

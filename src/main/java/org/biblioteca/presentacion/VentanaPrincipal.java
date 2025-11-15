@@ -88,11 +88,9 @@ public class VentanaPrincipal extends JFrame {
 
         btnInicio.addActionListener(e -> abrirVista("Dashboard de Reportes", new DashboardReportes()));
 
-        // Botón DEVOLUCIONES (Placeholder)
-        //btnDevoluciones.addActionListener(e -> abrirVista("Gestión de Devoluciones", new JPanel()));
 
-        // Botón REPORTES (Placeholder)
-        //btnReportes.addActionListener(e -> abrirVista("Reportes", new JPanel()));
+        // Botón REPORTES
+        btnReportes.addActionListener(e -> abrirVista("Módulo de Reportes Analíticos", new GestionReportesDashboard()));
 
 
         // 3. Manejar el cierre de la ventana (para forzar el cierre de sesión)
