@@ -51,6 +51,7 @@ public class EditorTrabajador extends JDialog {
             // En modo edición
             txtUsuarioLogin.setEnabled(false); // No se edita el usuario
             txtDni.setEnabled(false);          // No se edita el DNI
+            cboRol.setEnabled(false);
             txtContrasena.setText("");
         } else {
             // En modo creación
