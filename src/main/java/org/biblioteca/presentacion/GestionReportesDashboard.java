@@ -29,14 +29,8 @@ public class GestionReportesDashboard extends JPanel {
                     new GestionReporteTopLibPrest(), "Reporte analítico de libros más solicitados con filtros de fecha.");
         }
 
-        // ----------------------------------------------------
-        // 2. OTROS REPORTES (Placeholder para futuros desarrollos)
-        // ----------------------------------------------------
 
-        // Pestaña 2: Reporte de Multas (Ejemplo de otro reporte futuro)
-        // if (SessionManager.esAdministrador()) {
-        //     tabbedPaneInterno.addTab("Multas por Lector", null, new PanelFuturoReporteMultas(), "Reporte de multas acumuladas");
-        // }
+        // Pestaña 3: Historial de prestamos con filtros de rango de fechas y opcion de devolucion, prestamo o ambos (Ejemplo de otro reporte futuro)
 
         // Si no hay pestañas añadidas, se podría mostrar un mensaje.
         if (tabbedPaneInterno.getTabCount() > 0) {
