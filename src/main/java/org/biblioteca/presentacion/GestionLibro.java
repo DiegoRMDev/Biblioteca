@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GestionLibro extends  JPanel{
+public class GestionLibro extends JPanel implements Actualizable{
     private JPanel mainPanel;
     private JScrollPane centralPanel;
     private JButton btnNuevo;
@@ -19,6 +19,11 @@ public class GestionLibro extends  JPanel{
 
     private DefaultTableModel modeloTabla;
     private LibroService libroService;
+
+    @Override
+    public void actualizarDatos() {
+        this.actualizarTabla(); // <--- LLAMADA CLAVe
+    }
 
     public GestionLibro() {
         this.libroService = new LibroService();

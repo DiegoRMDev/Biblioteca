@@ -20,7 +20,7 @@ public class SessionManager {
         }
         currentTrabajador = trabajador;
         // Opcionalmente, imprimir un mensaje de inicio de sesión
-        System.out.println("Sesión iniciada: " + trabajador.getUsuarioLogin() + " (Rol ID: " + trabajador.getRolID() + ")");
+        System.out.println("Sesión iniciada: " + trabajador.getUsuarioLogin() + " (Rol: " + trabajador.getNombreRol() + ")");
     }
 
     /**
@@ -50,23 +50,31 @@ public class SessionManager {
     }
 
     /**
-
-     * MÉTODOS DE PERMISOS BASADOS EN EL ROL
-
+     * MÉTODOS DE PERMISOS BASADOS EN EL ROL (Usando el Nombre del Rol)
      */
 
-
+    /**
+     * Verifica si el trabajador actual es un Administrador.
+     */
     public static boolean esAdministrador() {
-        return currentTrabajador != null && currentTrabajador.getRolID() == 1;
+        // Usamos equalsIgnoreCase para una comparación segura, en caso de que la DB devuelva mayúsculas/minúsculas diferentes.
+        return currentTrabajador != null && "Administrador".equalsIgnoreCase(currentTrabajador.getNombreRol());
     }
 
-
+    /**
+     * Verifica si el trabajador actual es un Bibliotecario.
+     */
     public static boolean esBibliotecario() {
-        return currentTrabajador != null && currentTrabajador.getRolID() == 2;
+        return currentTrabajador != null && "Bibliotecario".equalsIgnoreCase(currentTrabajador.getNombreRol());
     }
 
-
-    public static boolean tieneRol(int rolId) {
-        return currentTrabajador != null && currentTrabajador.getRolID() == rolId;
+    /**
+     * Verifica si el trabajador actual tiene un rol específico por nombre.
+     */
+    public static boolean tieneRol(String nombreRol) {
+        if (nombreRol == null) {
+            return false;
+        }
+        return currentTrabajador != null && nombreRol.equalsIgnoreCase(currentTrabajador.getNombreRol());
     }
 }

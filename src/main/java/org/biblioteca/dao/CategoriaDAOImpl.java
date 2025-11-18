@@ -18,10 +18,17 @@ public class CategoriaDAOImpl implements  CategoriaDAO {
     public void insertar(Categoria categoria) {
 
         String sql = "INSERT INTO Categorias (Nombre, Descripcion) VALUES (?, ?)";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexion.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, categoria.getNombre());
             stmt.setString(2, categoria.getDescripcion());
             stmt.executeUpdate();
+            // CAMBIO 2: Recuperar y asignar la clave generada
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    // Asignar el ID de vuelta al objeto
+                    categoria.setCategoriaID(rs.getInt(1));
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace(); // Manejo de errores
         }

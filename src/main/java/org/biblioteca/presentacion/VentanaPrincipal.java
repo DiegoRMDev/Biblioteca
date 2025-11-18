@@ -16,7 +16,6 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnTrabajadores;
     private JButton btnLibros;
     private JButton btnPrestamos;
-    private JButton btnDevoluciones;
     private JButton btnReportes;
     private JButton btnLectores;
     private JLabel logo;
@@ -43,20 +42,28 @@ public class VentanaPrincipal extends JFrame {
         setLocationRelativeTo(null);
 
         // Abrir la vista de inicio por defecto
-        abrirVista("Inicio", new JPanel()); // Reemplaza JPanel() con tu panel de inicio si lo tienes
+        abrirVista("Inicio", new DashboardReportes()); // Reemplaza JPanel() con tu panel de inicio si lo tienes
     }
 
     /**
      * Aplica la lógica de control de acceso basada en el rol.
      */
     private void configurarPermisos() {
-        // Ocultar botones que solo debe ver el Administrador
-        if (!SessionManager.esAdministrador()) {
-            btnTrabajadores.setVisible(false);
-            btnReportes.setVisible(false);
-        }
 
-        // Aquí puedes añadir más lógica de permisos si el Bibliotecario tiene restricciones
+        boolean esAdmin = SessionManager.esAdministrador();
+        boolean esBibliotecario = SessionManager.esBibliotecario();
+
+        // Variable clave para permisos compartidos (Admin O Bibliotecario)
+        boolean puedeVerRecursosComunes = esAdmin || esBibliotecario;
+
+
+        btnTrabajadores.setVisible(puedeVerRecursosComunes);
+        btnLibros.setVisible(puedeVerRecursosComunes);
+        btnLectores.setVisible(puedeVerRecursosComunes);
+        btnReportes.setVisible(puedeVerRecursosComunes);
+        btnPrestamos.setVisible(esBibliotecario);
+
+
     }
 
     private void configurarListeners() {
@@ -68,7 +75,7 @@ public class VentanaPrincipal extends JFrame {
         // 2. Navegación (Conexión de botones)
 
         // Botón Inicio
-        btnInicio.addActionListener(e -> abrirVista("Inicio", new JPanel()));
+        btnInicio.addActionListener(e -> abrirVista("Inicio", new DashboardReportes()));
 
         // Botón TRABAJADORES (Placeholder - Reemplazar con new GestionTrabajadores() cuando esté lista)
         btnTrabajadores.addActionListener(e -> abrirVista("Gestión Administrativa", new GestionAdminDashboard()));
@@ -80,13 +87,13 @@ public class VentanaPrincipal extends JFrame {
         btnLectores.addActionListener(e -> abrirVista("Gestión de Lectores", new GestionLector()));
 
         // Botón PRÉSTAMOS (Placeholder)
-        //btnPrestamos.addActionListener(e -> abrirVista("Gestión de Préstamos", new JPanel()));
+        btnPrestamos.addActionListener(e -> abrirVista("Gestión de Préstamos", new GestionPrestamo()));
 
-        // Botón DEVOLUCIONES (Placeholder)
-        //btnDevoluciones.addActionListener(e -> abrirVista("Gestión de Devoluciones", new JPanel()));
+        btnInicio.addActionListener(e -> abrirVista("Dashboard de Reportes", new DashboardReportes()));
 
-        // Botón REPORTES (Placeholder)
-        //btnReportes.addActionListener(e -> abrirVista("Reportes", new JPanel()));
+
+        // Botón REPORTES
+        btnReportes.addActionListener(e -> abrirVista("Módulo de Reportes Analíticos", new GestionReportesDashboard()));
 
 
         // 3. Manejar el cierre de la ventana (para forzar el cierre de sesión)
@@ -96,25 +103,44 @@ public class VentanaPrincipal extends JFrame {
                 intentarCerrarSesion();
             }
         });
+
     }
 
     /**
      * Gestiona la apertura de una vista en el JTabbedPane.
      */
     private void abrirVista(String titulo, JPanel vista) {
-        // 1. Verificar si la pestaña ya está abierta
-        if (vistasAbiertas.containsKey(titulo)) {
-            // Si ya existe, simplemente enfocarla (seleccionar la pestaña)
-            contentPanel.setSelectedComponent(vistasAbiertas.get(titulo));
+
+        int currentIndex = contentPanel.indexOfTab(titulo);
+        if (currentIndex != -1 && contentPanel.getSelectedIndex() == currentIndex) {
             return;
         }
+        contentPanel.removeAll();
 
-        // 2. Si no existe, añadirla
+        if (vista instanceof Actualizable) {
+            System.out.println("DEBUG: Refrescando vista: " + titulo);
+            ((Actualizable) vista).actualizarDatos();
+        }
+
+        // 4. Añadir la nueva vista
         contentPanel.addTab(titulo, vista);
-        vistasAbiertas.put(titulo, vista);
 
-        // 3. Enfocar la nueva pestaña
+        // 5. Enfocar la nueva pestaña (será la única que hay)
         contentPanel.setSelectedComponent(vista);
+    }
+    public void refrescarVista(String titulo) {
+        //   Buscamos el panel en nuestro mapa de vistas abiertas
+        JPanel vista = vistasAbiertas.get(titulo);
+
+        //  . Verificamos que exista y que sea el tipo que queremos refrescar
+        if (vista instanceof DashboardReportes) {
+            System.out.println("Refrescando el Dashboard de 'Inicio'...");
+            // 3. Llamamos a su metodo público de recarga de datos
+            ((DashboardReportes) vista).cargarDatosDashboard();
+        }
+
+        // (Aquí podríamos añadir más 'else if' si otras vistas
+        // necesitaran refrescarse en el futuro)
     }
 
     private void intentarCerrarSesion() {

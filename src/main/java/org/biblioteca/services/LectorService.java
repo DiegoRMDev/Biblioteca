@@ -3,6 +3,7 @@ package org.biblioteca.services;
 import org.biblioteca.dao.LectorDAO;
 import org.biblioteca.dao.LectorDAOImpl;
 import org.biblioteca.entities.Lector;
+import org.biblioteca.exception.LectorConPrestamoException;
 
 import java.util.List;
 
@@ -32,8 +33,12 @@ public class LectorService {
         lectorDAO.actualizar(lector);
     }
 
-    public void eliminarLector(int id) {
-        lectorDAO.eliminar(id);
+    public void eliminarLector(int id) throws LectorConPrestamoException {
+        try {
+            lectorDAO.eliminar(id);
+        } catch (LectorConPrestamoException e) {
+            throw e;
+        }
     }
 
     public Lector buscarLectorPorId(int id) {

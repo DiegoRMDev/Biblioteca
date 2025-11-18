@@ -266,4 +266,11 @@ public class Libro {
     public void setAutores(List<Autor> autores) {
         this.autores = autores;
     }
+
+    public String toString() {
+
+        return this.titulo;
+    }
+
+
 }

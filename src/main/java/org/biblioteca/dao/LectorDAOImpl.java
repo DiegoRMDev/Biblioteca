@@ -1,6 +1,7 @@
 package org.biblioteca.dao;
 
 import org.biblioteca.entities.Lector;
+import org.biblioteca.exception.LectorConPrestamoException;
 import org.biblioteca.util.DBConnection;
 
 import java.sql.*;
@@ -18,13 +19,21 @@ public class LectorDAOImpl implements LectorDAO {
     public void insertar(Lector lector) {
 
         String sql = "INSERT INTO Lectores (DNI, Nombre, Direccion, Telefono, Email) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexion.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, lector.getDni());
             stmt.setString(2, lector.getNombre());
             stmt.setString(3, lector.getDireccion());
             stmt.setString(4, lector.getTelefono());
             stmt.setString(5, lector.getEmail());
             stmt.executeUpdate();
+
+            // 2. Recuperar la clave generada
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    // 3. Asignar el ID generado de vuelta al objeto Lector
+                    lector.setLectorID(rs.getInt(1)); // ¡Esto corrige el error del ID=0!
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,7 +64,11 @@ public class LectorDAOImpl implements LectorDAO {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
+            if (e.getErrorCode() == 547 || e.getMessage().contains("REFERENCE constraint")) {
+                throw new LectorConPrestamoException("No se puede eliminar el Lector (ID: " + id + ") porque tiene historial de préstamos .", e);
+            }
             e.printStackTrace();
+            throw new RuntimeException("Error de persistencia en la base de datos.", e);
         }
     }
 

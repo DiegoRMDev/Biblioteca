@@ -21,7 +21,7 @@ public class PrestamoDetalle {
     // Constructor para REGISTRAR un nuevo detalle (Debe usar setters para validar)
     public PrestamoDetalle(int prestamoID, int libroID, int cantidad) {
         // Al registrar, usamos los setters para activar las validaciones integradas
-        this.setPrestamoID(prestamoID);
+        this.prestamoID = prestamoID;
         this.setLibroID(libroID);
         this.setCantidad(cantidad);
     }
