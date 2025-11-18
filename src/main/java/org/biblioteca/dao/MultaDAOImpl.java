@@ -1,5 +1,10 @@
 package org.biblioteca.dao;
 
+import org.biblioteca.entities.Multa;
+import org.biblioteca.util.DBConnection;
+
+import java.sql.*;
+
 public class MultaDAO {
 }
 
