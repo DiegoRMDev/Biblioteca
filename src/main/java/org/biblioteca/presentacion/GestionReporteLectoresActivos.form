@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionReporteLectoresActivos">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="655" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="b1481" binding="panelFiltros" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="d39b9" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Mes Inicio:"/>
+            </properties>
+          </component>
+          <component id="f078a" class="javax.swing.JSpinner" binding="spinnerMesInicio">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="9724d" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Año Inicio:"/>
+            </properties>
+          </component>
+          <component id="d3719" class="javax.swing.JSpinner" binding="spinnerAnioInicio">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="43637" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Mes Fin:"/>
+            </properties>
+          </component>
+          <component id="b6c08" class="javax.swing.JSpinner" binding="spinnerMesFin">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="b0c5b" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Año Fin:"/>
+            </properties>
+          </component>
+          <component id="d0734" class="javax.swing.JSpinner" binding="spinnerAnioFin">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </grid>
+      <grid id="fda03" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="169c6" class="javax.swing.JButton" binding="btnGenerarTabla">
+            <constraints/>
+            <properties>
+              <text value="Generar Reporte"/>
+            </properties>
+          </component>
+          <component id="499af" class="javax.swing.JButton" binding="btnGenerarGrafico">
+            <constraints/>
+            <properties>
+              <text value="Generar Grafico"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

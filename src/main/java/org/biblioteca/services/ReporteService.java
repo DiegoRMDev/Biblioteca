@@ -117,7 +117,7 @@ public class ReporteService {
             parametros.put("PERIODO_TEXTO", periodoTexto);
 
             // 🚨 3. Llamar al DAO para obtener el JasperPrint 🚨
-            JasperPrint jasperPrint = reporteDAO.generarHistorialPrestamos(reporteStream, parametros);
+            JasperPrint jasperPrint = reporteDAO.generarReporte(reporteStream, parametros);
 
             // 4. Mostrar el reporte (Responsabilidad del Servicio/UI)
             JasperViewer viewer = new JasperViewer(jasperPrint, false);
@@ -174,6 +174,44 @@ public class ReporteService {
         } catch (JRException e) {
             e.printStackTrace();
             throw new Exception("Error al generar el gráfico Jasper: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error inesperado: " + e.getMessage());
+        }
+    }
+
+    public void generarReporteLectoresActivos(Timestamp fechaInicio, Timestamp fechaFin, String periodoTexto, String nombreReporte) throws Exception {
+        try {
+            // 1. Cargar el archivo .jasper dinámicamente
+            InputStream reporteStream = getClass().getResourceAsStream("/reportes/" + nombreReporte);
+            if (reporteStream == null) {
+                throw new RuntimeException("No se pudo encontrar el archivo del reporte: " + nombreReporte);
+            }
+
+            // 2. Preparar los parámetros
+            Map<String, Object> parametros = new HashMap<>();
+            parametros.put("FECHA_INICIO", fechaInicio);
+            parametros.put("FECHA_FIN", fechaFin);
+            parametros.put("PERIODO_TEXTO", periodoTexto);
+
+            // 3. Llamar al DAO para obtener el JasperPrint
+            // Usamos el nuevo metodo genérico del DAO si lo implementaste, o lo llenamos directamente
+            // JasperPrint jasperPrint = reporteDAO.generarReporte(reporteStream, parametros); // Si usaste el nuevo método en DAO
+
+            // O lo llenamos directamente en el Service, siguiendo tu patrón de TopLibros:
+            Connection conexion = DBConnection.getConnection();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reporteStream, parametros, conexion);
+
+
+            // 4. Mostrar el visor
+            String titulo = nombreReporte.contains("Grafico") ? "Gráfico: Lectores Activos" : "Reporte: Lectores Activos";
+            JasperViewer viewer = new JasperViewer(jasperPrint, false);
+            viewer.setTitle(titulo + " (" + periodoTexto + ")");
+            viewer.setVisible(true);
+
+        } catch (JRException e) {
+            e.printStackTrace();
+            throw new Exception("Error al generar el reporte Jasper: " + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Error inesperado: " + e.getMessage());
