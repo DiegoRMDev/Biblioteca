@@ -129,4 +129,54 @@ public class ReporteService {
             throw new Exception("Error al generar el reporte Historial: " + e.getMessage());
         }
     }
+
+    public void generarGraficoTopLibros(int mes, int anio) throws Exception {
+        try {
+            // 1. Obtener la conexión a la BD
+            Connection conexion = DBConnection.getConnection();
+            if (conexion == null) {
+                throw new RuntimeException("No se pudo obtener la conexión a la base de datos.");
+            }
+
+            // 2. Cargar el archivo .jasper del gráfico (Asumimos que el archivo se llamará ReporteTopLibrosGrafico.jasper)
+            InputStream reporteStream = getClass().getResourceAsStream("/reportes/ReporteTopLibrosGrafico.jasper");
+            if (reporteStream == null) {
+                throw new RuntimeException("No se pudo encontrar el archivo del gráfico. Asegúrate de que ReporteTopLibrosGrafico.jasper esté en 'resources/reportes'.");
+            }
+
+            // 3. Calcular las fechas de inicio y fin (Lógica de período)
+            // FECHA_INICIO: Primer día de ese mes
+            LocalDate primerDia = LocalDate.of(anio, mes, 1);
+            Timestamp fechaInicio = Timestamp.valueOf(primerDia.atStartOfDay());
+
+            // FECHA_FIN: Primer día del SIGUIENTE mes
+            YearMonth yearMonth = YearMonth.of(anio, mes);
+            LocalDate primerDiaSiguienteMes = yearMonth.atEndOfMonth().plusDays(1);
+            Timestamp fechaFin = Timestamp.valueOf(primerDiaSiguienteMes.atStartOfDay());
+
+            String nombreMes = primerDia.getMonth().getDisplayName(java.time.format.TextStyle.FULL, new java.util.Locale("es", "ES"));
+            String periodoTexto = "Período: " + nombreMes.substring(0, 1).toUpperCase() + nombreMes.substring(1).toLowerCase() + " de " + anio;
+
+            // 4. Preparar los parámetros
+            Map<String, Object> parametros = new HashMap<>();
+            parametros.put("FECHA_INICIO", fechaInicio);
+            parametros.put("FECHA_FIN", fechaFin);
+            parametros.put("PERIODO_TEXTO", periodoTexto);
+
+            // 5. Llenar el reporte (Generar el JasperPrint)
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reporteStream, parametros, conexion);
+
+            // 6. Mostrar el visor del reporte
+            JasperViewer viewer = new JasperViewer(jasperPrint, false);
+            viewer.setTitle("Gráfico: Libros más prestados (" + mes + "/" + anio + ")");
+            viewer.setVisible(true);
+
+        } catch (JRException e) {
+            e.printStackTrace();
+            throw new Exception("Error al generar el gráfico Jasper: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error inesperado: " + e.getMessage());
+        }
+    }
 }

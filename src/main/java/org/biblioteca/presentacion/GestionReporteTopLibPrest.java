@@ -12,6 +12,7 @@ public class GestionReporteTopLibPrest extends JPanel {
     private JSpinner spinnerAnio;
     private JButton btnGenerar;
     private JPanel panelFiltros;
+    private JButton btnGenerarGrafico;
 
     private ReporteService reporteService;
 
@@ -37,7 +38,30 @@ public class GestionReporteTopLibPrest extends JPanel {
 
         // --- Listener del Botón ---
         btnGenerar.addActionListener(e -> generarReporte());
+
+        btnGenerarGrafico.addActionListener(e -> generarGrafico());
     }
+
+    // NUEVO MeTODO PARA GENERAR EL GRÁFICO
+    private void generarGrafico() {
+        try {
+            //  Obtenemos los valores de la UI
+            int mes = (Integer) spinnerMes.getValue();
+            int anio = (Integer) spinnerAnio.getValue();
+
+            //  Llamamos al nuevo metodo del servicio
+            reporteService.generarGraficoTopLibros(mes, anio);
+
+        } catch (Exception ex) {
+            //  Mostramos cualquier error
+            JOptionPane.showMessageDialog(this,
+                    "Error al generar el gráfico:\n" + ex.getMessage(),
+                    "Error de Reporte",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
 
     private void generarReporte() {
         try {
@@ -57,4 +81,6 @@ public class GestionReporteTopLibPrest extends JPanel {
             ex.printStackTrace();
         }
     }
+
+
 }
