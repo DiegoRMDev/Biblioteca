@@ -13,4 +13,6 @@ public interface TrabajadorDAO {
     List<Trabajador> obtenerTodos();
     Trabajador obtenerPorUsuarioLogin(String usuarioLogin);
     void actualizarContrasena(int trabajadorID, String nuevaContrasena);
+
+    Trabajador obtenerPorDni(String dni);
 }
