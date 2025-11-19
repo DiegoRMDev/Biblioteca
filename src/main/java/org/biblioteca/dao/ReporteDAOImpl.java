@@ -69,7 +69,7 @@ public class ReporteDAOImpl implements ReporteDAO{
         }
         return resultado;
     }
-    // ESTE ES EL NUEVO MeTODO UNIFICADO
+    // MeTODO UNIFICADO
     @Override
     public JasperPrint generarReporte(InputStream reporteStream, Map<String, Object> parametros) throws Exception {
         Connection conexion = null;

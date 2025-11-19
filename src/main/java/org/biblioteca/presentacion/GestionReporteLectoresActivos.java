@@ -89,15 +89,6 @@ public class GestionReporteLectoresActivos extends JPanel {
             String periodoTexto = String.format("Período: %02d/%d al %02d/%d",
                     mesInicio, anioInicio, mesFin, anioFin);
 
-            // Si deseas el nombre completo de los meses, usa esto:
-            /*
-            String nombreMesInicio = localDateInicio.getMonth().getDisplayName(java.time.format.TextStyle.FULL, new Locale("es", "ES"));
-            String nombreMesFin = YearMonth.of(anioFin, mesFin).getMonth().getDisplayName(java.time.format.TextStyle.FULL, new Locale("es", "ES"));
-            String periodoTexto = String.format("Período: %s/%d al %s/%d",
-                                                nombreMesInicio, anioInicio, nombreMesFin, anioFin);
-            */
-
-
             // 5. Determinar qué archivo .jasper llamar (se mantiene igual)
             String nombreReporte = esGrafico ? "ReporteLectoresActivos_Grafico.jasper" : "ReporteLectoresActivos_Tabla.jasper";
 
