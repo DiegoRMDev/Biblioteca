@@ -74,19 +74,15 @@ public class ReporteDAOImpl implements ReporteDAO{
     public JasperPrint generarReporte(InputStream reporteStream, Map<String, Object> parametros) throws Exception {
         Connection conexion = null;
         try {
-            // Obtener la conexión a la BD a través de la clase de utilidad
             conexion = DBConnection.getConnection();
             if (conexion == null || conexion.isClosed()) {
                 throw new RuntimeException("No se pudo obtener la conexión a la base de datos.");
             }
 
-            // JasperReports utiliza esta conexión, el InputStream del reporte y los parámetros
             return JasperFillManager.fillReport(reporteStream, parametros, conexion);
         } catch (SQLException e) {
-            // Manejo específico de errores de base de datos
             throw new SQLException("Error de DB al generar reporte: " + e.getMessage(), e);
         } catch (Exception e) {
-            // Manejo de otros errores (ej. JRException)
             throw new Exception("Error al llenar el reporte: " + e.getMessage(), e);
         }
     }

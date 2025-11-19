@@ -33,25 +33,18 @@ public class ReporteService {
 
     public void generarReporteTopLibros(int mes, int anio) throws Exception {
         try {
-            //  Obtener la conexión a la BD
             Connection conexion = DBConnection.getConnection();
             if (conexion == null) {
                 throw new RuntimeException("No se pudo obtener la conexión a la base de datos.");
             }
-
-            // Cargar el archivo .jasper desde la carpeta 'resources/reportes'
             InputStream reporteStream = getClass().getResourceAsStream("/reportes/ReporteTopLibros.jasper");
             if (reporteStream == null) {
                 throw new RuntimeException("No se pudo encontrar el archivo del reporte. ¿Está en 'resources/reportes'?");
             }
 
-            //  Calcular las fechas de inicio y fin (para los parámetros)
-
-            // FECHA_INICIO: Primer día de ese mes (ej. 01/10/2024 00:00:00)
             LocalDate primerDia = LocalDate.of(anio, mes, 1);
             Timestamp fechaInicio = Timestamp.valueOf(primerDia.atStartOfDay());
 
-            // FECHA_FIN: Primer día del SIGUIENTE mes (ej. 01/11/2024 00:00:00)
             YearMonth yearMonth = YearMonth.of(anio, mes);
             LocalDate primerDiaSiguienteMes = yearMonth.atEndOfMonth().plusDays(1);
             Timestamp fechaFin = Timestamp.valueOf(primerDiaSiguienteMes.atStartOfDay());
@@ -65,13 +58,9 @@ public class ReporteService {
             parametros.put("FECHA_FIN", fechaFin);
             parametros.put("PERIODO_TEXTO", periodoTexto);
 
-            //  Llenar el reporte
-            // Jasper usará la conexión, los parámetros y la consulta SQL
-            // interna del reporte para generar la vista.
+
             JasperPrint jasperPrint = JasperFillManager.fillReport(reporteStream, parametros, conexion);
 
-            //  Mostrar el visor de reporte
-            // (El 'false' es para que no cierre la aplicación entera al cerrar el visor)
             JasperViewer viewer = new JasperViewer(jasperPrint, false);
             viewer.setTitle("Reporte: Libros más prestados (" + mes + "/" + anio + ")");
             viewer.setVisible(true);
@@ -87,13 +76,12 @@ public class ReporteService {
 
     public void generarReporteHistorialPrestamos(Timestamp fechaInicio, Timestamp fechaFin, String tipoEventoNombre) throws Exception {
         try {
-            // 1. Cargar el recurso (Responsabilidad del Servicio/Capa superior)
+
             InputStream reporteStream = getClass().getResourceAsStream("/reportes/ReporteHistorialPrestamos.jasper");
             if (reporteStream == null) {
                 throw new RuntimeException("No se pudo encontrar el archivo del reporte de Historial.");
             }
 
-            // 2. Lógica de filtro y parámetros (Responsabilidad del Servicio)
             String tipoFiltroSQL;
             if (tipoEventoNombre.contains("Todos")) {
                 tipoFiltroSQL = "A";
@@ -116,10 +104,8 @@ public class ReporteService {
             parametros.put("TIPO_EVENTO", tipoFiltroSQL);
             parametros.put("PERIODO_TEXTO", periodoTexto);
 
-            // 🚨 3. Llamar al DAO para obtener el JasperPrint 🚨
             JasperPrint jasperPrint = reporteDAO.generarReporte(reporteStream, parametros);
 
-            // 4. Mostrar el reporte (Responsabilidad del Servicio/UI)
             JasperViewer viewer = new JasperViewer(jasperPrint, false);
             viewer.setTitle("Reporte: Historial de Préstamos y Devoluciones");
             viewer.setVisible(true);
@@ -132,24 +118,20 @@ public class ReporteService {
 
     public void generarGraficoTopLibros(int mes, int anio) throws Exception {
         try {
-            // 1. Obtener la conexión a la BD
+
             Connection conexion = DBConnection.getConnection();
             if (conexion == null) {
                 throw new RuntimeException("No se pudo obtener la conexión a la base de datos.");
             }
 
-            // 2. Cargar el archivo .jasper del gráfico (Asumimos que el archivo se llamará ReporteTopLibrosGrafico.jasper)
             InputStream reporteStream = getClass().getResourceAsStream("/reportes/ReporteTopLibrosGrafico.jasper");
             if (reporteStream == null) {
                 throw new RuntimeException("No se pudo encontrar el archivo del gráfico. Asegúrate de que ReporteTopLibrosGrafico.jasper esté en 'resources/reportes'.");
             }
 
-            // 3. Calcular las fechas de inicio y fin (Lógica de período)
-            // FECHA_INICIO: Primer día de ese mes
             LocalDate primerDia = LocalDate.of(anio, mes, 1);
             Timestamp fechaInicio = Timestamp.valueOf(primerDia.atStartOfDay());
 
-            // FECHA_FIN: Primer día del SIGUIENTE mes
             YearMonth yearMonth = YearMonth.of(anio, mes);
             LocalDate primerDiaSiguienteMes = yearMonth.atEndOfMonth().plusDays(1);
             Timestamp fechaFin = Timestamp.valueOf(primerDiaSiguienteMes.atStartOfDay());
@@ -157,16 +139,13 @@ public class ReporteService {
             String nombreMes = primerDia.getMonth().getDisplayName(java.time.format.TextStyle.FULL, new java.util.Locale("es", "ES"));
             String periodoTexto = "Período: " + nombreMes.substring(0, 1).toUpperCase() + nombreMes.substring(1).toLowerCase() + " de " + anio;
 
-            // 4. Preparar los parámetros
             Map<String, Object> parametros = new HashMap<>();
             parametros.put("FECHA_INICIO", fechaInicio);
             parametros.put("FECHA_FIN", fechaFin);
             parametros.put("PERIODO_TEXTO", periodoTexto);
 
-            // 5. Llenar el reporte (Generar el JasperPrint)
             JasperPrint jasperPrint = JasperFillManager.fillReport(reporteStream, parametros, conexion);
 
-            // 6. Mostrar el visor del reporte
             JasperViewer viewer = new JasperViewer(jasperPrint, false);
             viewer.setTitle("Gráfico: Libros más prestados (" + mes + "/" + anio + ")");
             viewer.setVisible(true);
@@ -182,28 +161,22 @@ public class ReporteService {
 
     public void generarReporteLectoresActivos(Timestamp fechaInicio, Timestamp fechaFin, String periodoTexto, String nombreReporte) throws Exception {
         try {
-            // 1. Cargar el archivo .jasper dinámicamente
+
             InputStream reporteStream = getClass().getResourceAsStream("/reportes/" + nombreReporte);
             if (reporteStream == null) {
                 throw new RuntimeException("No se pudo encontrar el archivo del reporte: " + nombreReporte);
             }
 
-            // 2. Preparar los parámetros
             Map<String, Object> parametros = new HashMap<>();
             parametros.put("FECHA_INICIO", fechaInicio);
             parametros.put("FECHA_FIN", fechaFin);
             parametros.put("PERIODO_TEXTO", periodoTexto);
 
-            // 3. Llamar al DAO para obtener el JasperPrint
-            // Usamos el nuevo metodo genérico del DAO si lo implementaste, o lo llenamos directamente
-            // JasperPrint jasperPrint = reporteDAO.generarReporte(reporteStream, parametros); // Si usaste el nuevo método en DAO
 
-            // O lo llenamos directamente en el Service, siguiendo tu patrón de TopLibros:
             Connection conexion = DBConnection.getConnection();
             JasperPrint jasperPrint = JasperFillManager.fillReport(reporteStream, parametros, conexion);
 
 
-            // 4. Mostrar el visor
             String titulo = nombreReporte.contains("Grafico") ? "Gráfico: Lectores Activos" : "Reporte: Lectores Activos";
             JasperViewer viewer = new JasperViewer(jasperPrint, false);
             viewer.setTitle(titulo + " (" + periodoTexto + ")");
