@@ -18,7 +18,15 @@ public class TrabajadorService {
 
 
     public void registrarTrabajador(String nombre, String apellido, String dni, String usuarioLogin, String contrasena, int rolID, String email, String telefono) throws IllegalArgumentException {
+        // Validar Usuario Único
+        if (trabajadorDAO.obtenerPorUsuarioLogin(usuarioLogin) != null) {
+            throw new IllegalArgumentException("El nombre de usuario '" + usuarioLogin + "' ya no está disponible.");
+        }
 
+        // Validar DNI Único
+        if (trabajadorDAO.obtenerPorDni(dni) != null) { // Asumiendo que implementaste el método
+            throw new IllegalArgumentException("El DNI '" + dni + "' ya está asociado a otro trabajador.");
+        }
         // El constructor de Trabajador ahora recibe todos los campos nuevos
         Trabajador nuevoTrabajador = new Trabajador(nombre, apellido, dni, usuarioLogin, contrasena, rolID, email, telefono);
 
@@ -76,6 +84,21 @@ public class TrabajadorService {
 
         if (trabajadorOriginal == null) {
             throw new IllegalArgumentException("El trabajador a modificar no existe.");
+        }
+        Trabajador otroConMismoUsuario = trabajadorDAO.obtenerPorUsuarioLogin(trabajadorModificado.getUsuarioLogin());
+
+        // Si existe alguien con ese usuario... Y ese alguien tiene un ID diferente al mío
+        if (otroConMismoUsuario != null && otroConMismoUsuario.getTrabajadorID() != trabajadorModificado.getTrabajadorID()) {
+            throw new IllegalArgumentException("El nombre de usuario '" + trabajadorModificado.getUsuarioLogin() + "' ya está ocupado por otro trabajador.");
+        }
+
+        // --- NUEVA VALIDACIÓN DE DUPLICADOS (DNI) ---
+        // (Asegúrate de haber implementado obtenerPorDni en tu DAO como vimos antes)
+        Trabajador otroConMismoDni = trabajadorDAO.obtenerPorDni(trabajadorModificado.getDni());
+
+        // Si existe alguien con ese DNI... Y ese alguien tiene un ID diferente al mío
+        if (otroConMismoDni != null && otroConMismoDni.getTrabajadorID() != trabajadorModificado.getTrabajadorID()) {
+            throw new IllegalArgumentException("El DNI '" + trabajadorModificado.getDni() + "' ya pertenece a otro trabajador.");
         }
 
         int idTrabajadorSesion = SessionManager.getCurrentTrabajador().getTrabajadorID();

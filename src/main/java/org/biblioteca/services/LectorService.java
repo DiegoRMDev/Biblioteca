@@ -16,6 +16,9 @@ public class LectorService {
 
 
     public void registrarLector(String dni, String nombre, String direccion, String telefono, String email) throws IllegalArgumentException {
+        if (lectorDAO.obtenerPorDni(dni) != null) {
+            throw new IllegalArgumentException("El número de DNI '" + dni + "' ya está registrado en el sistema.");
+        }
 
         Lector nuevoLector = new Lector(dni, nombre, direccion, telefono, email);
         lectorDAO.insertar(nuevoLector);
@@ -23,6 +26,15 @@ public class LectorService {
 
     public void modificarLector(int lectorID, String dni, String nombre, String direccion, String telefono, String email) throws IllegalArgumentException {
 
+        // 1. Validación de Negocio: DNI Único (excluyendo al propio usuario)
+        Lector lectorConMismoDni = lectorDAO.obtenerPorDni(dni);
+
+        // Si encontramos a alguien con ese DNI, Y ese alguien NO SOY YO (IDs diferentes)
+        if (lectorConMismoDni != null && lectorConMismoDni.getLectorID() != lectorID) {
+            throw new IllegalArgumentException("El número de DNI '" + dni + "' ya pertenece a otro lector.");
+        }
+
+        // 2. Actualización
         Lector lector = new Lector();
         lector.setLectorID(lectorID);
         lector.setDni(dni);
@@ -30,6 +42,7 @@ public class LectorService {
         lector.setDireccion(direccion);
         lector.setTelefono(telefono);
         lector.setEmail(email);
+
         lectorDAO.actualizar(lector);
     }
 

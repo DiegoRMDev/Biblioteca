@@ -4,6 +4,7 @@ import org.biblioteca.entities.Prestamo;
 import org.biblioteca.entities.PrestamoDetalle;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface PrestamoDAO {
@@ -18,4 +19,7 @@ public interface PrestamoDAO {
 
     // Obtiene un préstamo y sus detalles
     Prestamo obtenerPorId(int id);
+
+    List<Prestamo> obtenerPorFiltros(String dni, Timestamp fechaInicio, Timestamp fechaFin);
+
 }

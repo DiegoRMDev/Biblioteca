@@ -119,4 +119,28 @@ public class LectorDAOImpl implements LectorDAO {
         }
         return lectores;
     }
+
+    @Override
+    public Lector obtenerPorDni(String dni) {
+        String sql = "SELECT * FROM Lectores WHERE DNI = ?";
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setString(1, dni);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Lector(
+                            rs.getInt("LectorID"),
+                            rs.getString("DNI"),
+                            rs.getString("Nombre"),
+                            rs.getString("Direccion"),
+                            rs.getString("Telefono"),
+                            rs.getString("Email"),
+                            rs.getTimestamp("FechaRegistro")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
