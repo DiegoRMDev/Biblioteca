@@ -11,5 +11,6 @@ public interface LibroDAO {
     void insertar(Libro libro, List<Autor> autores);
     void actualizar(Libro libro, List<Autor> autores);
     void eliminar(int id);
+    Libro obtenerPorIsbn(String isbn);
 
 }

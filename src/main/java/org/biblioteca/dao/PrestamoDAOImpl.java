@@ -174,4 +174,58 @@ public class PrestamoDAOImpl implements PrestamoDAO {
         }
         return prestamo;
     }
+
+    @Override
+    public List<Prestamo> obtenerPorFiltros(String dni, Timestamp fechaInicio, Timestamp fechaFin) {
+        List<Prestamo> prestamos = new ArrayList<>();
+
+        // Base de la consulta (igual que obtenerTodos pero sin el ORDER BY aún)
+        StringBuilder sql = new StringBuilder(
+                "SELECT p.*, l.Nombre AS LectorNombre, t.Nombre AS TrabajadorNombre " +
+                        "FROM Prestamos p " +
+                        "JOIN Lectores l ON p.LectorID = l.LectorID " +
+                        "JOIN Trabajadores t ON p.TrabajadorID = t.TrabajadorID " +
+                        "WHERE 1=1 "); // '1=1' nos permite agregar 'AND' libremente
+
+        // Lista para guardar los parámetros en orden
+        List<Object> parametros = new ArrayList<>();
+
+        // Filtro por DNI (Búsqueda exacta o parcial)
+        if (dni != null && !dni.trim().isEmpty()) {
+            sql.append(" AND l.DNI LIKE ? ");
+            parametros.add(dni + "%"); // El '%' permite buscar por el inicio del DNI
+        }
+
+        // Filtro por Rango de Fechas
+        if (fechaInicio != null) {
+            sql.append(" AND p.FechaPrestamo >= ? ");
+            parametros.add(fechaInicio);
+        }
+        if (fechaFin != null) {
+            sql.append(" AND p.FechaPrestamo <= ? ");
+            parametros.add(fechaFin);
+        }
+
+        sql.append(" ORDER BY p.FechaPrestamo DESC");
+
+        try (PreparedStatement stmt = conexion.prepareStatement(sql.toString())) {
+            // Asignar parámetros dinámicamente
+            for (int i = 0; i < parametros.size(); i++) {
+                stmt.setObject(i + 1, parametros.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Reutilizamos tu método helper existente
+                    Prestamo prestamo = extraerPrestamoDeResultSet(rs);
+                    prestamo.setDetalles(obtenerDetallesParaPrestamo(prestamo.getPrestamoID()));
+                    prestamos.add(prestamo);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al filtrar préstamos: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return prestamos;
+    }
 }

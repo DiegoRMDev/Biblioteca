@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionPrestamo">
   <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="737" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -39,6 +39,61 @@
             <constraints/>
             <properties>
               <text value="Registrar Devolucion"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="e39cc" binding="panelFiltrados" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="4521f" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="DNI lector:"/>
+            </properties>
+          </component>
+          <component id="534cd" class="javax.swing.JTextField" binding="txtFiltroDni">
+            <constraints/>
+            <properties>
+              <preferredSize width="100" height="30"/>
+            </properties>
+          </component>
+          <component id="7915e" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Desde (YYYY-MM-DD):"/>
+            </properties>
+          </component>
+          <component id="84e8b" class="javax.swing.JTextField" binding="txtFiltroFechaInicio">
+            <constraints/>
+            <properties>
+              <preferredSize width="80" height="30"/>
+            </properties>
+          </component>
+          <component id="b3280" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Hasta:"/>
+            </properties>
+          </component>
+          <component id="b6daa" class="javax.swing.JTextField" binding="txtFiltroFechaFin">
+            <constraints/>
+            <properties>
+              <preferredSize width="80" height="30"/>
+            </properties>
+          </component>
+          <component id="119c9" class="javax.swing.JButton" binding="btnFiltrar">
+            <constraints/>
+            <properties>
+              <text value="Buscar"/>
+            </properties>
+          </component>
+          <component id="52282" class="javax.swing.JButton" binding="btnLimpiarFiltros">
+            <constraints/>
+            <properties>
+              <text value="Limpiar"/>
             </properties>
           </component>
         </children>

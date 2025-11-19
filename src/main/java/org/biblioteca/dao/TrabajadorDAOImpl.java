@@ -147,6 +147,38 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
     }
 
     @Override
+    public Trabajador obtenerPorDni(String dni) {
+        // 1. LA CONSULTA SQL (Con el JOIN clave)
+        // Seleccionamos todo de Trabajadores (t.*) Y el nombre del rol de la tabla Roles (r.NombreRol)
+        // Unimos las tablas donde coincidan los IDs (t.RolID = r.RolID)
+        String sql = "SELECT t.*, r.NombreRol FROM Trabajadores t " +
+                "INNER JOIN Roles r ON t.RolID = r.RolID " +
+                "WHERE t.DNI = ?";
+
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setString(1, dni);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // 2. CREAR EL OBJETO BASE
+                    // Este método (que ya tienes) lee los datos de la tabla 'Trabajadores'
+                    Trabajador trabajador = extraerTrabajadorDeResultSet(rs);
+
+                    // 3. LLENAR EL DATO FALTANTE (Del JOIN)
+                    // Aquí leemos la columna extra 'NombreRol' que trajimos gracias al INNER JOIN
+                    trabajador.setNombreRol(rs.getString("NombreRol"));
+
+                    return trabajador;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener Trabajador por DNI: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public void eliminar(int id) {
         String sql = "DELETE FROM Trabajadores WHERE TrabajadorID = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {

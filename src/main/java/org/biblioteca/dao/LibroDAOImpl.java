@@ -225,6 +225,36 @@ public class LibroDAOImpl implements  LibroDAO{
         }
     }
 
+    @Override
+    public Libro obtenerPorIsbn(String isbn) {
+        String sql = "SELECT * FROM Libros WHERE ISBN = ?";
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Reutilizamos la lógica de creación del objeto
+                    Libro libro = new Libro(
+                            rs.getInt("LibroID"),
+                            rs.getString("ISBN"),
+                            rs.getString("Titulo"),
+                            rs.getString("Editorial"),
+                            rs.getInt("AnioPublicacion"),
+                            rs.getInt("CategoriaID"),
+                            rs.getString("Idioma"),
+                            rs.getString("UbicacionFisica"),
+                            rs.getString("RutaImagen"),
+                            rs.getString("Estado"),
+                            rs.getInt("Stock")
+                    );
+                    return libro;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private List<Autor> obtenerAutoresParaLibro(int libroId) throws SQLException {
         List<Autor> autores = new ArrayList<>();
         String sqlAutores = "SELECT a.* FROM Autores a " +

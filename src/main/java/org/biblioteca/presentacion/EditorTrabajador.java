@@ -97,49 +97,97 @@ public class EditorTrabajador extends JDialog {
     }
 
     private void guardarTrabajador() {
-        String nombre = txtNombre.getText();
-        String apellido = txtApellido.getText();
-        String dni = txtDni.getText();
-        String usuarioLogin = txtUsuarioLogin.getText();
-        String contrasena = new String(txtContrasena.getPassword());
-        String email = txtEmail.getText();
-        String telefono = txtTelefono.getText();
-        String estado = (String) cboEstado.getSelectedItem();
+        // --- 1. RECOLECCIÓN Y LIMPIEZA DE DATOS ---
+        String nombre = txtNombre.getText().trim();
+        String apellido = txtApellido.getText().trim();
+        String dni = txtDni.getText().trim();
+        String usuarioLogin = txtUsuarioLogin.getText().trim();
+        String contrasena = new String(txtContrasena.getPassword()).trim();
+        String email = txtEmail.getText().trim();
+        String telefono = txtTelefono.getText().trim();
 
         Rol rolSeleccionado = (Rol) cboRol.getSelectedItem();
+        String estado = (String) cboEstado.getSelectedItem();
 
-        if (rolSeleccionado == null || estado == null) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar un rol y un estado.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+        // --- 2. VALIDACIONES VISUALES (UI) ---
+
+        // A) Campos Obligatorios Básicos
+        if (nombre.isEmpty()) {
+            mostrarError("El Nombre es obligatorio.", txtNombre);
+            return;
+        }
+        if (apellido.isEmpty()) {
+            mostrarError("El Apellido es obligatorio.", txtApellido);
+            return;
+        }
+        if (dni.isEmpty()) {
+            mostrarError("El DNI es obligatorio.", txtDni);
+            return;
+        }
+        if (usuarioLogin.isEmpty()) {
+            mostrarError("El Usuario es obligatorio.", txtUsuarioLogin);
             return;
         }
 
+        // B) Validación de Formato de DNI (8 dígitos numéricos)
+        if (!dni.matches("\\d{8}")) {
+            mostrarError("El DNI debe contener exactamente 8 números.", txtDni);
+            return;
+        }
+
+        // C) Validaciones de Contraseña
+        if (esCreacion) {
+            // Si es nuevo, la contraseña es obligatoria
+            if (contrasena.isEmpty()) {
+                mostrarError("Debe asignar una contraseña al nuevo trabajador.", txtContrasena);
+                return;
+            }
+        }
+        // Si escribió algo en la contraseña (sea nuevo o edición), validar longitud
+        if (!contrasena.isEmpty() && contrasena.length() < 6) {
+            mostrarError("La contraseña debe tener al menos 6 caracteres.", txtContrasena);
+            return;
+        }
+
+        // D) Validación de Email (Opcional, pero si escribe algo, que sea válido)
+        if (!email.isEmpty() && !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,4}$")) {
+            mostrarError("El formato del correo electrónico no es válido (ej: usuario@dominio.com).", txtEmail);
+            return;
+        }
+
+        // E) Validación de Combos
+        if (rolSeleccionado == null) {
+            mostrarError("Debe seleccionar un Rol para el trabajador.", cboRol);
+            return;
+        }
+        if (estado == null) {
+            mostrarError("Debe seleccionar un Estado.", cboEstado);
+            return;
+        }
+
+        // --- 3. LLAMADA AL SERVICIO (BACKEND) ---
         try {
             if (esCreacion) {
-                if (contrasena.isEmpty()) {
-                    throw new IllegalArgumentException("La contraseña es obligatoria al crear un nuevo trabajador.");
-                }
-
                 trabajadorService.registrarTrabajador(
                         nombre, apellido, dni, usuarioLogin, contrasena,
                         rolSeleccionado.getRolID(), email, telefono
                 );
                 JOptionPane.showMessageDialog(this, "Trabajador registrado con éxito.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
 
-
             } else {
-                // 1. Aplicar datos al objeto (incluyendo el posible cambio de RolID)
+                // Aplicar cambios al objeto en memoria
                 trabajadorAEditar.setNombre(nombre);
                 trabajadorAEditar.setApellido(apellido);
+                trabajadorAEditar.setDni(dni); // Permitimos intentar cambiar DNI (el servicio validará duplicados)
                 trabajadorAEditar.setEmail(email);
                 trabajadorAEditar.setTelefono(telefono);
-                trabajadorAEditar.setRolID(rolSeleccionado.getRolID()); // <-- RolID que se valida en el servicio
+                trabajadorAEditar.setRolID(rolSeleccionado.getRolID());
                 trabajadorAEditar.setEstado(estado);
 
-                // 2. Intentar actualizar los datos (Valida la regla del cambio de Rol de Admin)
-                // Si hay SecurityException, se lanzará AQUÍ.
+                // Intentar guardar (El servicio validará reglas de negocio como "Admin no puede degradarse a sí mismo")
                 trabajadorService.actualizarDatos(trabajadorAEditar);
 
-                // 3. Si la actualización de datos tuvo éxito, actualizamos la contraseña si se cambió.
+                // Si cambió la contraseña, actualizarla
                 if (!contrasena.isEmpty()) {
                     trabajadorService.actualizarContrasena(trabajadorAEditar.getTrabajadorID(), contrasena);
                 }
@@ -147,19 +195,26 @@ public class EditorTrabajador extends JDialog {
                 JOptionPane.showMessageDialog(this, "Datos del trabajador actualizados con éxito.", "Edición Exitosa", JOptionPane.INFORMATION_MESSAGE);
             }
 
-            dispose();
+            dispose(); // Cerrar ventana si todo salió bien
 
         } catch (SecurityException ex) {
-            // CAPTURA la excepción del Servicio que prohíbe el cambio de Rol de Admin.
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Permiso", JOptionPane.ERROR_MESSAGE);
+            // Captura reglas de seguridad (ej: Admin intentando borrar a otro Admin)
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Acceso Denegado", JOptionPane.ERROR_MESSAGE);
 
         } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, "Error de Validación: " + ex.getMessage(), "Datos Inválidos", JOptionPane.ERROR_MESSAGE);
+            // Captura validaciones de negocio (ej: DNI duplicado, Usuario duplicado)
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Dato Inválido", JOptionPane.WARNING_MESSAGE);
 
-        } catch (RuntimeException ex) {
-            JOptionPane.showMessageDialog(this, "Error de Persistencia: El DNI o Usuario ya existe, o hubo un error en la base de datos.", "Error de Guardado", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            // Captura errores inesperados
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al guardar: " + ex.getMessage(), "Error del Sistema", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
+    }
+
+    private void mostrarError(String mensaje, JComponent campo) {
+        JOptionPane.showMessageDialog(this, mensaje, "Validación", JOptionPane.WARNING_MESSAGE);
+        campo.requestFocus();
     }
 }
 

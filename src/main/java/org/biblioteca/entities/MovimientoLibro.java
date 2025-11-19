@@ -105,13 +105,19 @@ public class MovimientoLibro {
 
         String cleanTipo = tipoMovimiento.trim();
 
-        // Regla de Negocio (replicando el CHECK constraint)
-        final List<String> TIPOS_PERMITIDOS = List.of("Entrada", "Salida", "Ajuste");
+        // --- ACTUALIZAR ESTA LISTA PARA COINCIDIR CON EL SQL ---
+        final List<String> TIPOS_PERMITIDOS = List.of(
+                "IngresoProveedor",
+                "IngresoDonacion",      // <-- AGREGAR ESTO
+                "DevolucionProveedor",
+                "SalidaPrestamo",
+                "EntradaDevolucion",
+                "AjusteInventario"
+        );
 
         if (!TIPOS_PERMITIDOS.contains(cleanTipo)) {
-            throw new IllegalArgumentException("El Tipo de Movimiento debe ser 'Entrada', 'Salida' o 'Ajuste'.");
+            throw new IllegalArgumentException("Tipo de movimiento no válido: " + cleanTipo);
         }
-
         this.tipoMovimiento = cleanTipo;
     }
 

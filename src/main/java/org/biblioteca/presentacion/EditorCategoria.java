@@ -42,30 +42,36 @@ public class EditorCategoria extends JDialog{
 
 
     private void guardarCategoria() {
-        String nombre = txtNombre.getText();
-        String descripcion = txtDescripcion.getText();
+        String nombre = txtNombre.getText().trim(); // Es bueno añadir .trim()
+        String descripcion = txtDescripcion.getText().trim();
 
-        if (nombre.trim().isEmpty()) {
+        if (nombre.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "El nombre de la categoria es obligatorio.",
+                    "El nombre de la categoría es obligatorio.",
                     "Campo Vacío",
                     JOptionPane.WARNING_MESSAGE);
             txtNombre.requestFocus();
             return;
         }
 
-
-
         try {
             if (categoriaActual == null) { // Modo: Crear
                 servicio.registrarCategoria(nombre, descripcion);
+                JOptionPane.showMessageDialog(this, "Categoría registrada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else { // Modo: Editar
                 servicio.modificarCategoria(categoriaActual.getCategoriaID(), nombre, descripcion);
+                JOptionPane.showMessageDialog(this, "Categoría actualizada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             }
             dispose();
-        } catch (IllegalArgumentException ex) {
 
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            // Errores de validación de la entidad (ej. nombre muy largo)
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Validación", JOptionPane.WARNING_MESSAGE);
+
+        } catch (RuntimeException ex) {
+            // ¡AQUÍ CAPTURAMOS EL ERROR DE DUPLICADO DEL DAO!
+            // El mensaje será: "Ya existe una categoría con el nombre '...'"
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Base de Datos", JOptionPane.ERROR_MESSAGE);
         }
     }
 

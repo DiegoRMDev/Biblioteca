@@ -9,4 +9,5 @@ public interface LectorDAO {
     void eliminar(int id);
     Lector obtenerPorId(int id);
     List<Lector> obtenerTodos();
+    Lector obtenerPorDni(String dni);
 }

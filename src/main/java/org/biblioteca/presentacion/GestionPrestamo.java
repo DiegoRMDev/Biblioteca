@@ -9,6 +9,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class GestionPrestamo extends JPanel {
@@ -19,6 +22,12 @@ public class GestionPrestamo extends JPanel {
     private JTable tablaPrestamos;
     private JPanel panelInferio;
     private JButton btnVerDetalle;
+    private JPanel panelFiltrados;
+    private JTextField txtFiltroDni;
+    private JTextField txtFiltroFechaInicio;
+    private JTextField txtFiltroFechaFin;
+    private JButton btnFiltrar;
+    private JButton btnLimpiarFiltros;
 
 
     private DefaultTableModel modeloTabla;
@@ -33,6 +42,8 @@ public class GestionPrestamo extends JPanel {
         // Configurar botones
         btnNuevoPrestamo.addActionListener(e -> abrirEditor());
         btnRegistrarDevol.addActionListener(e -> registrarDevolucion());
+        btnFiltrar.addActionListener(e -> aplicarFiltros());
+        btnLimpiarFiltros.addActionListener(e -> limpiarFiltros());
         btnVerDetalle.addActionListener(this::abrirDialogoDetalle);
 
         actualizarTabla();
@@ -69,22 +80,74 @@ public class GestionPrestamo extends JPanel {
         DetallePrestamo dialogo = new DetallePrestamo(parentFrame, prestamo, libroService);
         dialogo.setVisible(true);
     }
+    private void aplicarFiltros() {
+        String dni = txtFiltroDni.getText().trim();
+        String fechaIniStr = txtFiltroFechaInicio.getText().trim();
+        String fechaFinStr = txtFiltroFechaFin.getText().trim();
+
+        Timestamp tInicio = null;
+        Timestamp tFin = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try {
+            // Parsear Fecha Inicio
+            if (!fechaIniStr.isEmpty()) {
+                LocalDate ldInicio = LocalDate.parse(fechaIniStr, formatter);
+                tInicio = Timestamp.valueOf(ldInicio.atStartOfDay());
+            }
+
+            // Parsear Fecha Fin
+            if (!fechaFinStr.isEmpty()) {
+                LocalDate ldFin = LocalDate.parse(fechaFinStr, formatter);
+                // Ajustamos al final del día para incluir préstamos de ese día completo
+                tFin = Timestamp.valueOf(ldFin.atTime(23, 59, 59));
+            }
+
+            // Llamar al servicio
+            List<Prestamo> prestamosFiltrados = prestamoService.filtrarPrestamos(
+                    dni.isEmpty() ? null : dni,
+                    tInicio,
+                    tFin
+            );
+
+            actualizarTablaConDatos(prestamosFiltrados);
+
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Formato de fecha incorrecto. Use: yyyy-MM-dd (ej. 2025-10-30)",
+                    "Error de Formato", JOptionPane.WARNING_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al filtrar: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void limpiarFiltros() {
+        txtFiltroDni.setText("");
+        txtFiltroFechaInicio.setText("");
+        txtFiltroFechaFin.setText("");
+        actualizarTabla(); // Recarga todos sin filtros
+    }
 
     private void actualizarTabla() {
-        modeloTabla.setRowCount(0);
+        // Carga por defecto (todos)
         List<Prestamo> prestamos = prestamoService.listarPrestamos();
+        actualizarTablaConDatos(prestamos);
+    }
 
-        for (Prestamo p : prestamos) {
+    // Método auxiliar para llenar la JTable con una lista específica
+    private void actualizarTablaConDatos(List<Prestamo> listaPrestamos) {
+        modeloTabla.setRowCount(0);
+        for (Prestamo p : listaPrestamos) {
             modeloTabla.addRow(new Object[]{
                     p.getPrestamoID(),
-                    p.getLectorNombre(),    // <-- Usamos el nombre del JOIN
-                    p.getTrabajadorNombre(),// <-- Usamos el nombre del JOIN
+                    p.getLectorNombre(),
+                    p.getTrabajadorNombre(),
                     p.getFechaPrestamo(),
                     p.getFechaDevolucionPrevista(),
                     p.getEstado()
             });
         }
-
     }
 
     private void abrirEditor() {
