@@ -40,6 +40,12 @@ public class GestionReportesDashboard extends JPanel {
                     new GestionReporteHistorialPrestamos(), "Historial detallado de préstamos y devoluciones por rango de fechas y tipo de evento.");
         }
 
+        if (puedeVerReportes) {
+            // Añadir el nuevo reporte de Lectores Activos con rango de fechas
+            tabbedPaneInterno.addTab("Lectores Activos (Tendencia)", null,
+                    new GestionReporteLectoresActivos(), "Reporte de tendencia de lectores únicos activos por rango de fechas.");
+        }
+
 
         // Si no hay pestañas añadidas, se podría mostrar un mensaje.
         if (tabbedPaneInterno.getTabCount() > 0) {

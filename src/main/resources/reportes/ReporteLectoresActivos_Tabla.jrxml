@@ -1,0 +1,105 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="ReporteLectoresActivos_Tabla" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="459b406d-c3ca-43e7-acd4-71665d7c4ab3">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="RegistroBibliotecaDB"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="FECHA_FIN" class="java.sql.Timestamp"/>
+	<parameter name="PERIODO_TEXTO" class="java.lang.String"/>
+	<query language="sql"><![CDATA[WITH MesesRango AS (
+
+    SELECT 
+        CAST($P{FECHA_INICIO} AS DATE) AS FechaMes
+    UNION ALL
+   
+    SELECT 
+        DATEADD(MONTH, 1, FechaMes)
+    FROM 
+        MesesRango
+
+    WHERE 
+        DATEADD(MONTH, 1, FechaMes) < CAST($P{FECHA_FIN} AS DATE)
+),
+ConteoLectores AS (
+
+    SELECT
+        COUNT(DISTINCT P.LectorID) AS TotalLectoresActivos,
+        YEAR(P.FechaPrestamo) AS Anio,
+        MONTH(P.FechaPrestamo) AS Mes
+    FROM 
+        dbo.Prestamos P
+    WHERE
+        P.FechaPrestamo >= $P{FECHA_INICIO}
+        AND P.FechaPrestamo < $P{FECHA_FIN}
+    GROUP BY 
+        YEAR(P.FechaPrestamo), 
+        MONTH(P.FechaPrestamo)
+)
+
+SELECT
+    YEAR(MR.FechaMes) AS Anio,
+    MONTH(MR.FechaMes) AS Mes,
+    ISNULL(CL.TotalLectoresActivos, 0) AS TotalLectoresActivos 
+FROM
+    MesesRango MR
+LEFT JOIN
+    ConteoLectores CL ON MONTH(MR.FechaMes) = CL.Mes AND YEAR(MR.FechaMes) = CL.Anio
+ORDER BY
+    Anio ASC, Mes ASC
+
+OPTION (MAXRECURSION 365);]]></query>
+	<field name="Anio" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="Anio"/>
+		<property name="com.jaspersoft.studio.field.label" value="Anio"/>
+	</field>
+	<field name="Mes" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="Mes"/>
+		<property name="com.jaspersoft.studio.field.label" value="Mes"/>
+	</field>
+	<field name="TotalLectoresActivos" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="TotalLectoresActivos"/>
+		<property name="com.jaspersoft.studio.field.label" value="TotalLectoresActivos"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="80" splitType="Stretch">
+		<element kind="staticText" uuid="559d1a3c-b261-4127-b08e-8a215582e057" x="0" y="5" width="555" height="40" forecolor="#0D47A1" fontSize="20.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[REPORTE DE LECTORES ACTIVOS POR MESES]]></text>
+		</element>
+		<element kind="textField" uuid="623c21c6-2c1a-429b-8e1c-53535f29d10e" x="0" y="45" width="555" height="30" fontSize="14.0" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA[$P{PERIODO_TEXTO}]]></expression>
+		</element>
+	</title>
+	<pageHeader height="10" splitType="Stretch"/>
+	<columnHeader height="30" splitType="Stretch">
+		<element kind="staticText" uuid="35421a40-4519-45b3-a1d0-3e75f26f9274" mode="Opaque" x="150" y="0" width="150" height="30" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[PERÍODO (MES/AÑO)]]></text>
+			<box>
+				<pen lineWidth="0.5" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="6530ccd3-ee5e-4dde-900f-dace00ab42fd" mode="Opaque" x="300" y="0" width="150" height="30" forecolor="#FFFFFF" backcolor="#3C6E71" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[TOTAL LECTORES ACTIVOS]]></text>
+			<box>
+				<pen lineWidth="0.5" lineColor="#000000"/>
+			</box>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<element kind="textField" uuid="2843aad6-207e-4f7d-9c2d-ada5d0cb0f30" x="150" y="0" width="150" height="20" fontSize="11.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{Mes} + "/" + $F{Anio}]]></expression>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="8bbb92eb-82ed-42c3-b26b-b3885cde96d5" x="300" y="0" width="150" height="20" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{TotalLectoresActivos}]]></expression>
+				<box>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</box>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>

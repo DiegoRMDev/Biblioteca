@@ -1,0 +1,69 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="ReporteLectoresActivos_Grafico." language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="08bfdd3d-a2d5-48fd-adf0-cf908859d5ec">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="RegistroBibliotecaDB"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="FECHA_FIN" class="java.sql.Timestamp"/>
+	<parameter name="PERIODO_TEXTO" class="java.lang.String"/>
+	<query language="sql"><![CDATA[SELECT
+    COUNT(DISTINCT P.LectorID) AS TotalLectoresActivos,
+    YEAR(P.FechaPrestamo) AS Anio,
+    MONTH(P.FechaPrestamo) AS Mes
+FROM 
+    dbo.Prestamos P
+WHERE
+    P.FechaPrestamo >= $P{FECHA_INICIO}
+    AND P.FechaPrestamo < $P{FECHA_FIN}
+GROUP BY 
+    YEAR(P.FechaPrestamo), 
+    MONTH(P.FechaPrestamo)
+ORDER BY 
+    Anio ASC, 
+    Mes ASC]]></query>
+	<field name="TotalLectoresActivos" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="TotalLectoresActivos"/>
+		<property name="com.jaspersoft.studio.field.label" value="TotalLectoresActivos"/>
+	</field>
+	<field name="Anio" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="Anio"/>
+		<property name="com.jaspersoft.studio.field.label" value="Anio"/>
+	</field>
+	<field name="Mes" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="Mes"/>
+		<property name="com.jaspersoft.studio.field.label" value="Mes"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="60" splitType="Stretch">
+		<element kind="staticText" uuid="e6d15b1a-289d-4720-a614-72b15e3b5037" x="0" y="0" width="802" height="30" forecolor="#0D47A1" fontSize="18.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[TENDENCIA DE LECTORES ACTIVOS POR MESES]]></text>
+		</element>
+		<element kind="textField" uuid="a6c533e4-8a1a-42c1-be56-9e6e0d9b1523" x="0" y="30" width="802" height="20" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA[$P{PERIODO_TEXTO}]]></expression>
+		</element>
+	</title>
+	<pageHeader height="10" splitType="Stretch"/>
+	<columnHeader splitType="Stretch"/>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter splitType="Stretch"/>
+	<summary height="450" splitType="Stretch">
+		<element kind="chart" chartType="bar" uuid="5a7af946-b671-4fb5-a420-df3817cffbfe" x="0" y="10" width="802" height="430" evaluationTime="Report">
+			<dataset kind="category">
+				<series>
+					<seriesExpression><![CDATA["Lectores Activos por Mes"]]></seriesExpression>
+					<categoryExpression><![CDATA[$F{Mes} + "/" + $F{Anio}]]></categoryExpression>
+					<valueExpression><![CDATA[$F{TotalLectoresActivos}]]></valueExpression>
+				</series>
+			</dataset>
+			<plot categoryAxisLabelColor="#000000" categoryAxisTickLabelColor="#000000" categoryAxisLineColor="#000000" valueAxisLabelColor="#000000" valueAxisTickLabelColor="#000000" valueAxisTickLabelMask="" valueAxisVerticalTickLabels="false" valueAxisLineColor="#000000" showLabels="true">
+				<categoryAxisLabelExpression><![CDATA["Período (Mes/Año)"]]></categoryAxisLabelExpression>
+				<valueAxisLabelExpression><![CDATA["Cantidad de Lectores Únicos"]]></valueAxisLabelExpression>
+				<itemLabel>
+					<font fontName="SansSerif"/>
+				</itemLabel>
+			</plot>
+		</element>
+	</summary>
+</jasperReport>
