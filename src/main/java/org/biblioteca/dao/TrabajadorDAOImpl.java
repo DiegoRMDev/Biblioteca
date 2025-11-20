@@ -217,11 +217,24 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
     @Override
     public List<Trabajador> obtenerTodos() {
         List<Trabajador> trabajadores = new ArrayList<>();
-        String sql = "SELECT * FROM Trabajadores ORDER BY Nombre";
+
+        // CORRECCIÓN: Añadimos el JOIN para traer el NombreRol
+        String sql = "SELECT t.*, r.NombreRol " +
+                "FROM Trabajadores t " +
+                "INNER JOIN Roles r ON t.RolID = r.RolID " +
+                "ORDER BY t.Nombre";
+
         try (Statement stmt = conexion.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
+
             while (rs.next()) {
-                trabajadores.add(extraerTrabajadorDeResultSet(rs));
+                // 1. Extraemos los datos básicos (ID, Nombre, etc.)
+                Trabajador trabajador = extraerTrabajadorDeResultSet(rs);
+
+                // 2. ¡AQUÍ ESTABA EL FALTANTE! Asignamos el nombre del rol
+                trabajador.setNombreRol(rs.getString("NombreRol"));
+
+                trabajadores.add(trabajador);
             }
         } catch (SQLException e) {
             System.err.println("Error al obtener todos los Trabajadores: " + e.getMessage());

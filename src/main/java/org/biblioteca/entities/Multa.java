@@ -120,10 +120,7 @@ public class Multa {
             throw new IllegalArgumentException("La Fecha de Registro es obligatoria.");
         }
 
-        // Verificamos que la fecha no sea posterior al momento actual.
-        if (fechaRegistro.after(Timestamp.from(Instant.now()))) {
-            throw new IllegalArgumentException("La Fecha de Registro no puede ser una fecha futura.");
-        }
+
 
         this.fechaRegistro = fechaRegistro;
     }
