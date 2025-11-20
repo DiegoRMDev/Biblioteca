@@ -32,8 +32,9 @@ public class DBConnection {
      * Obtiene una instancia única (singleton) de la conexión a la BD.
      */
     public static Connection getConnection() {
-        if (connection == null) {
-            try {
+        try {
+            // Verificamos si es null O si está cerrada
+            if (connection == null || connection.isClosed()) {
                 // 1. Construye la URL de conexión
                 String server = properties.getProperty("db.server");
                 String port = properties.getProperty("db.port");
@@ -48,15 +49,14 @@ public class DBConnection {
                         properties.getProperty("db.user"),
                         properties.getProperty("db.password")
                 );
-                System.out.println("Conexión a la base de datos establecida correctamente.");
-
-            } catch (ClassNotFoundException e) {
-                System.err.println("Error: Driver de SQL Server no encontrado. Revisa el pom.xml.");
-                e.printStackTrace();
-            } catch (SQLException e) {
-                System.err.println("Error al conectar. Verifica las credenciales/servidor en config.properties: " + e.getMessage());
-                e.printStackTrace();
+                System.out.println("Conexión a la base de datos establecida (o reconectada).");
             }
+        } catch (ClassNotFoundException e) {
+            System.err.println("Error: Driver de SQL Server no encontrado. Revisa el pom.xml.");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("Error al conectar. Verifica las credenciales en config.properties: " + e.getMessage());
+            e.printStackTrace();
         }
         return connection;
     }

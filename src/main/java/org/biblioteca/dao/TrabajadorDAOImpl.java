@@ -76,20 +76,27 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
 
     @Override
     public Trabajador obtenerPorUsuarioLogin(String usuarioLogin) {
+        // CORRECCIÓN: Agregamos el JOIN para traer también el NombreRol
+        String sql = "SELECT t.*, r.NombreRol " +
+                "FROM Trabajadores t " +
+                "INNER JOIN Roles r ON t.RolID = r.RolID " +
+                "WHERE t.UsuarioLogin = ? COLLATE Latin1_General_CS_AS";
 
-        String sql = "SELECT * FROM Trabajadores WHERE UsuarioLogin = ? COLLATE Latin1_General_CS_AS";
         Trabajador trabajador = null;
 
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, usuarioLogin);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // 1. Extraer todos los datos (incluyendo nuevos)
+                    // 1. Extraer datos básicos
                     trabajador = extraerTrabajadorDeResultSet(rs);
 
-                    // 2. Extraer el HASH y el SALT y asignarlos al objeto
+                    // 2. Extraer datos de seguridad
                     trabajador.setContrasenaHash(rs.getBytes("ContrasenaHash"));
                     trabajador.setSalt(rs.getBytes("Salt"));
+
+                    // 3. ¡LO MÁS IMPORTANTE! Asignar el nombre del rol
+                    trabajador.setNombreRol(rs.getString("NombreRol"));
                 }
             }
         } catch (SQLException e) {

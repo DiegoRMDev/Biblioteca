@@ -13,9 +13,9 @@ public class MultaDAOImp implements MultaDAO {
     public List<Multa> obtenerTodas() {
         List<Multa> lista = new ArrayList<>();
         String sql = "SELECT MultaID, PrestamoID, LibroID, DiasRetraso, Monto, FechaRegistro FROM Multas";
+        Connection conn = DBConnection.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql);
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -31,8 +31,10 @@ public class MultaDAOImp implements MultaDAO {
 
     public Multa obtenerPorId(int multaId) throws Exception {
         String sql = "SELECT MultaID, PrestamoID, LibroID, DiasRetraso, Monto, FechaRegistro FROM Multas WHERE MultaID = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = DBConnection.getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)){
+
             ps.setInt(1, multaId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
