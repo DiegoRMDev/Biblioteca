@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionLibro">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1"
+      bind-to-class="org.biblioteca.presentacion.GestionLibro">
   <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
       <xy x="20" y="20" width="500" height="400"/>
@@ -7,17 +8,38 @@
     <properties/>
     <border type="none"/>
     <children>
+
+      <!-- PANEL SUPERIOR DE BUSQUEDA -->
+      <grid id="searchPanel" binding="panelBuscador"
+            layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="txtSearch" class="javax.swing.JTextField" binding="txtBuscar">
+            <constraints/>
+            <properties>
+              <columns value="30"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+
+      <!-- TABLA -->
       <scrollpane id="36a9c" binding="centralPanel">
         <constraints border-constraint="Center"/>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="2a1cd" class="javax.swing.JTable" binding="tablaLibros" custom-create="true">
+          <component id="2a1cd" class="javax.swing.JTable"
+                     binding="tablaLibros" custom-create="true">
             <constraints/>
             <properties/>
           </component>
         </children>
       </scrollpane>
+
+      <!-- BOTONES -->
       <grid id="e2788" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
         <constraints border-constraint="South"/>
         <properties/>
@@ -43,6 +65,9 @@
           </component>
         </children>
       </grid>
+
     </children>
   </grid>
 </form>
+
+
