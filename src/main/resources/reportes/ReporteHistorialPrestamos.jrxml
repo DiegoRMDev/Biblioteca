@@ -146,8 +146,8 @@ ORDER BY
 			<element kind="textField" uuid="c2d0f0d2-05f7-4a00-b6a6-f33e08560032" x="642" y="0" width="80" height="15" forecolor="#000000" fontSize="8.0" pattern="dd/MM/yyyy HH:mm" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{FechaDevolucionPrevista}]]></expression>
 			</element>
-			<element kind="textField" uuid="d93c40e5-7977-44f2-985c-0975877c07b6" x="722" y="0" width="80" height="15" forecolor="#000000" fontSize="8.0" pattern="dd/MM/yyyy HH:mm" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{FechaDevolucion}]]></expression>
+			<element kind="textField" uuid="d93c40e5-7977-44f2-985c-0975877c07b6" x="722" y="0" width="80" height="15" forecolor="#000000" fontSize="8.0" pattern="dd/MM/yyyy" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{FechaDevolucion} == null ? "" : new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{FechaDevolucion})]]></expression>
 			</element>
 		</band>
 	</detail>
