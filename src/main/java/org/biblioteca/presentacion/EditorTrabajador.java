@@ -4,6 +4,7 @@ import org.biblioteca.entities.Rol;
 import org.biblioteca.entities.Trabajador;
 import org.biblioteca.services.RolService;
 import org.biblioteca.services.TrabajadorService;
+import org.biblioteca.util.SessionManager;
 
 import javax.swing.*;
 import java.util.List;
@@ -53,6 +54,8 @@ public class EditorTrabajador extends JDialog {
             txtDni.setEnabled(false);          // No se edita el DNI
             cboRol.setEnabled(false);
             txtContrasena.setText("");
+
+            aplicarRestriccionesAdmin();
         } else {
             // En modo creación
             txtContrasena.setText("");
@@ -60,6 +63,32 @@ public class EditorTrabajador extends JDialog {
 
         btnGuardar.addActionListener(e -> guardarTrabajador());
         btnCancelar.addActionListener(e -> dispose());
+    }
+
+    private void aplicarRestriccionesAdmin() {
+        // 1. Condición: El usuario en sesión es Admin, y NO se está auto-editando.
+        boolean esEdicionDeOtro = SessionManager.esAdministrador() &&
+                SessionManager.getCurrentTrabajador().getTrabajadorID() != trabajadorAEditar.getTrabajadorID();
+
+        // El rol del trabajador a editar viene cargado gracias a la corrección en el DAO.
+        boolean esTrabajadorAEditarAdmin = "Administrador".equalsIgnoreCase(trabajadorAEditar.getNombreRol());
+
+        if (esEdicionDeOtro && esTrabajadorAEditarAdmin) {
+            // 2. Si un Admin edita a otro Admin, bloqueamos todos los campos excepto el estado.
+            txtNombre.setEnabled(false);
+            txtApellido.setEnabled(false);
+            txtEmail.setEnabled(false);
+            txtTelefono.setEnabled(false);
+
+            // Bloqueamos la edición de contraseña
+            txtContrasena.setEnabled(false);
+
+            // 3. Informar visualmente al usuario
+            setTitle("Editar Trabajador (Solo Estado Disponible)");
+            JOptionPane.showMessageDialog(this,
+                    "El sistema solo permite a un Administrador modificar el estado de otro Administrador.",
+                    "Restricción de Seguridad", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
 

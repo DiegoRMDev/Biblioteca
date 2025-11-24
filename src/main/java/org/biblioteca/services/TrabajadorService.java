@@ -16,6 +16,19 @@ public class TrabajadorService {
         this.trabajadorDAO = new TrabajadorDAOImpl();
     }
 
+    private boolean sonCadenasIguales(String s1, String s2) {
+        String limpio1 = (s1 == null || s1.trim().isEmpty()) ? null : s1.trim();
+        String limpio2 = (s2 == null || s2.trim().isEmpty()) ? null : s2.trim();
+
+        if (limpio1 == null && limpio2 == null) {
+            return true;
+        }
+        if (limpio1 != null && limpio2 != null) {
+            return limpio1.equals(limpio2);
+        }
+        return false;
+    }
+
 
     public void registrarTrabajador(String nombre, String apellido, String dni, String usuarioLogin, String contrasena, int rolID, String email, String telefono) throws IllegalArgumentException {
         // Validar Usuario Único
@@ -24,7 +37,7 @@ public class TrabajadorService {
         }
 
         // Validar DNI Único
-        if (trabajadorDAO.obtenerPorDni(dni) != null) { // Asumiendo que implementaste el método
+        if (trabajadorDAO.obtenerPorDni(dni) != null) { // Asumiendo que implementaste el metodo
             throw new IllegalArgumentException("El DNI '" + dni + "' ya está asociado a otro trabajador.");
         }
         // El constructor de Trabajador ahora recibe todos los campos nuevos
@@ -85,18 +98,15 @@ public class TrabajadorService {
         if (trabajadorOriginal == null) {
             throw new IllegalArgumentException("El trabajador a modificar no existe.");
         }
-        Trabajador otroConMismoUsuario = trabajadorDAO.obtenerPorUsuarioLogin(trabajadorModificado.getUsuarioLogin());
 
-        // Si existe alguien con ese usuario... Y ese alguien tiene un ID diferente al mío
+        // Validaciones de Usuario Login
+        Trabajador otroConMismoUsuario = trabajadorDAO.obtenerPorUsuarioLogin(trabajadorModificado.getUsuarioLogin());
         if (otroConMismoUsuario != null && otroConMismoUsuario.getTrabajadorID() != trabajadorModificado.getTrabajadorID()) {
             throw new IllegalArgumentException("El nombre de usuario '" + trabajadorModificado.getUsuarioLogin() + "' ya está ocupado por otro trabajador.");
         }
 
-        // --- NUEVA VALIDACIÓN DE DUPLICADOS (DNI) ---
-        // (Asegúrate de haber implementado obtenerPorDni en tu DAO como vimos antes)
+        // Validación de DNI Único
         Trabajador otroConMismoDni = trabajadorDAO.obtenerPorDni(trabajadorModificado.getDni());
-
-        // Si existe alguien con ese DNI... Y ese alguien tiene un ID diferente al mío
         if (otroConMismoDni != null && otroConMismoDni.getTrabajadorID() != trabajadorModificado.getTrabajadorID()) {
             throw new IllegalArgumentException("El DNI '" + trabajadorModificado.getDni() + "' ya pertenece a otro trabajador.");
         }
@@ -117,20 +127,22 @@ public class TrabajadorService {
         {
             // 2. VERIFICAR SI HAY OTROS CAMBIOS ADEMÁS DEL ESTADO
 
+            // [INICIO CORRECCIÓN: Uso de sonCadenasIguales]
             boolean soloSeCambioElEstado =
-                    // El RolID sigue siendo el mismo (Validación de rol)
+                    // El RolID sigue siendo el mismo
                     trabajadorOriginal.getRolID() == trabajadorModificado.getRolID() &&
 
-                            // Nombre y Apellido no han cambiado
-                            trabajadorOriginal.getNombre().equals(trabajadorModificado.getNombre()) &&
-                            trabajadorOriginal.getApellido().equals(trabajadorModificado.getApellido()) &&
+                            // Nombre y Apellido no han cambiado (usando el metodo auxiliar)
+                            sonCadenasIguales(trabajadorOriginal.getNombre(), trabajadorModificado.getNombre()) &&
+                            sonCadenasIguales(trabajadorOriginal.getApellido(), trabajadorModificado.getApellido()) &&
 
-                            // Email y Teléfono no han cambiado (usar equals para Strings, y considerar nulos)
-                            (trabajadorOriginal.getEmail() == null ? trabajadorModificado.getEmail() == null : trabajadorOriginal.getEmail().equals(trabajadorModificado.getEmail())) &&
-                            (trabajadorOriginal.getTelefono() == null ? trabajadorModificado.getTelefono() == null : trabajadorOriginal.getTelefono().equals(trabajadorModificado.getTelefono())) &&
+                            // Email y Teléfono no han cambiado (usando el metodo auxiliar)
+                            sonCadenasIguales(trabajadorOriginal.getEmail(), trabajadorModificado.getEmail()) &&
+                            sonCadenasIguales(trabajadorOriginal.getTelefono(), trabajadorModificado.getTelefono()) &&
 
                             // El estado SÍ ha cambiado
                             !trabajadorOriginal.getEstado().equals(trabajadorModificado.getEstado());
+            // [FIN CORRECCIÓN]
 
             // 3. Si SÓLO se cambió el estado, permitimos el paso
             if (soloSeCambioElEstado) {
@@ -202,5 +214,13 @@ public class TrabajadorService {
 
     public Trabajador obtenerPorId(int id) {
         return trabajadorDAO.obtenerPorId(id);
+    }
+
+
+    public Trabajador obtenerTrabajadorPorDni(String dni) {
+        if (dni == null || dni.trim().isEmpty()) {
+            return null;
+        }
+        return trabajadorDAO.obtenerPorDni(dni);
     }
 }

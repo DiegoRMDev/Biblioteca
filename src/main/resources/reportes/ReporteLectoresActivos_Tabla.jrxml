@@ -5,48 +5,20 @@
 	<parameter name="FECHA_INICIO" class="java.sql.Timestamp"/>
 	<parameter name="FECHA_FIN" class="java.sql.Timestamp"/>
 	<parameter name="PERIODO_TEXTO" class="java.lang.String"/>
-	<query language="sql"><![CDATA[WITH MesesRango AS (
-
-    SELECT 
-        CAST($P{FECHA_INICIO} AS DATE) AS FechaMes
-    UNION ALL
-   
-    SELECT 
-        DATEADD(MONTH, 1, FechaMes)
-    FROM 
-        MesesRango
-
-    WHERE 
-        DATEADD(MONTH, 1, FechaMes) < CAST($P{FECHA_FIN} AS DATE)
-),
-ConteoLectores AS (
-
-    SELECT
-        COUNT(DISTINCT P.LectorID) AS TotalLectoresActivos,
-        YEAR(P.FechaPrestamo) AS Anio,
-        MONTH(P.FechaPrestamo) AS Mes
-    FROM 
-        dbo.Prestamos P
-    WHERE
-        P.FechaPrestamo >= $P{FECHA_INICIO}
-        AND P.FechaPrestamo < $P{FECHA_FIN}
-    GROUP BY 
-        YEAR(P.FechaPrestamo), 
-        MONTH(P.FechaPrestamo)
-)
-
-SELECT
-    YEAR(MR.FechaMes) AS Anio,
-    MONTH(MR.FechaMes) AS Mes,
-    ISNULL(CL.TotalLectoresActivos, 0) AS TotalLectoresActivos 
-FROM
-    MesesRango MR
-LEFT JOIN
-    ConteoLectores CL ON MONTH(MR.FechaMes) = CL.Mes AND YEAR(MR.FechaMes) = CL.Anio
+	<query language="sql"><![CDATA[SELECT
+    YEAR(P.FechaPrestamo) AS Anio,
+    MONTH(P.FechaPrestamo) AS Mes,
+    COUNT(DISTINCT P.LectorID) AS TotalLectoresActivos
+FROM 
+    dbo.Prestamos P
+WHERE
+    P.FechaPrestamo >= $P{FECHA_INICIO}
+    AND P.FechaPrestamo < $P{FECHA_FIN}
+GROUP BY 
+    YEAR(P.FechaPrestamo), 
+    MONTH(P.FechaPrestamo)
 ORDER BY
-    Anio ASC, Mes ASC
-
-OPTION (MAXRECURSION 365);]]></query>
+    Anio ASC, Mes ASC]]></query>
 	<field name="Anio" class="java.lang.Integer">
 		<property name="com.jaspersoft.studio.field.name" value="Anio"/>
 		<property name="com.jaspersoft.studio.field.label" value="Anio"/>
