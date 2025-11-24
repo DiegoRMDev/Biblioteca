@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionMultas">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="737" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+
+    <children>
+
+<!-- PANEL SUPERIOR: FILTROS -->
+      <grid id="panelFiltros" binding="panelFiltros" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+
+          <component id="lblPrestamo" class="javax.swing.JLabel">
+            <constraints/>
+            <properties><text value="ID Préstamo:"/></properties>
+          </component>
+
+          <component id="txtPrestamoID" class="javax.swing.JTextField" binding="txtFiltroPrestamoID">
+            <constraints/>
+            <properties><preferredSize width="80" height="28"/></properties>
+          </component>
+
+          <component id="lblFecha" class="javax.swing.JLabel">
+            <constraints/>
+            <properties><text value="Fecha Desde:"/></properties>
+          </component>
+
+          <component id="txtFechaInicio" class="javax.swing.JTextField" binding="txtFiltroFechaInicio">
+            <constraints/>
+            <properties><preferredSize width="80" height="28"/></properties>
+          </component>
+
+          <component id="lblFecha2" class="javax.swing.JLabel">
+            <constraints/>
+            <properties><text value="Hasta:"/></properties>
+          </component>
+
+          <component id="txtFechaFin" class="javax.swing.JTextField" binding="txtFiltroFechaFin">
+            <constraints/>
+            <properties><preferredSize width="80" height="28"/></properties>
+          </component>
+
+          <component id="btnBuscar" class="javax.swing.JButton" binding="btnFiltrar">
+            <constraints/>
+            <properties><text value="Buscar"/></properties>
+          </component>
+
+          <component id="btnLimpiar" class="javax.swing.JButton" binding="btnLimpiarFiltros">
+            <constraints/>
+            <properties><text value="Limpiar"/></properties>
+          </component>
+
+        </children>
+      </grid>
+
+      <!-- PANEL CENTRAL: TABLA -->
+      <scrollpane id="centralScroll" binding="centralPanel">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+
+          <component id="tablaMultasComp" class="javax.swing.JTable" binding="tablaMultas" custom-create="true">
+            <constraints/>
+            <properties/>
+          </component>
+
+        </children>
+      </scrollpane>
+
+      <!-- PANEL INFERIOR: BOTONES -->
+      <grid id="panelBotones" binding="panelInferior" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+
+          <component id="btnVerDetalle" class="javax.swing.JButton" binding="btnVerDetalle">
+            <constraints/>
+            <properties><text value="Ver detalle"/></properties>
+          </component>
+
+        </children>
+      </grid>
+
+    </children>
+  </grid>
+</form>

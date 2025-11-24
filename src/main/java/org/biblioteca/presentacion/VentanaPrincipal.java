@@ -16,6 +16,7 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnTrabajadores;
     private JButton btnLibros;
     private JButton btnPrestamos;
+    private JButton btnMultas;
     private JButton btnReportes;
     private JButton btnLectores;
     private JLabel logo;
@@ -24,6 +25,7 @@ public class VentanaPrincipal extends JFrame {
 
     // Mapa para almacenar instancias de vistas (para no recargar)
     private final Map<String, JPanel> vistasAbiertas = new HashMap<>();
+
 
     public VentanaPrincipal() {
         // 1. Configuración básica de la ventana
@@ -62,7 +64,7 @@ public class VentanaPrincipal extends JFrame {
         btnLectores.setVisible(puedeVerRecursosComunes);
         btnReportes.setVisible(puedeVerRecursosComunes);
         btnPrestamos.setVisible(esBibliotecario);
-
+        btnMultas.setVisible(puedeVerRecursosComunes);
 
     }
 
@@ -91,6 +93,8 @@ public class VentanaPrincipal extends JFrame {
 
         btnInicio.addActionListener(e -> abrirVista("Dashboard de Reportes", new DashboardReportes()));
 
+        //Boton MULTS
+        btnMultas.addActionListener(e -> abrirVista("Gestión de Multas", new GestionMultas()));
 
         // Botón REPORTES
         btnReportes.addActionListener(e -> abrirVista("Módulo de Reportes Analíticos", new GestionReportesDashboard()));
@@ -157,4 +161,6 @@ public class VentanaPrincipal extends JFrame {
             new LoginUI().setVisible(true);
         }
     }
+
+
 }
