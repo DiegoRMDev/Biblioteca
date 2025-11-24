@@ -8,6 +8,7 @@ import org.biblioteca.util.SessionManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
+import java.util.Collections;
 import java.util.List;
 
 public class GestionTrabajador extends JPanel {
@@ -17,6 +18,10 @@ public class GestionTrabajador extends JPanel {
     private JButton btnNuevo;
     private JButton btnEditar;
     private JButton btnEliminar;
+    private JPanel Filtros;
+    private JTextField txtFiltroDni;
+    private JButton btnBuscarDni;
+    private JButton btnVerTodos;
 
     private DefaultTableModel modeloTabla;
     private TrabajadorService trabajadorService;
@@ -37,6 +42,15 @@ public class GestionTrabajador extends JPanel {
         btnEditar.addActionListener(e -> editarTrabajadorSeleccionado());
         btnEliminar.addActionListener(e -> eliminarTrabajadorSeleccionado());
 
+        tablaTrabajadores.getSelectionModel().addListSelectionListener(e -> verificarSeleccion());
+
+        if (btnBuscarDni != null) {
+            btnBuscarDni.addActionListener(e -> buscarPorDni());
+        }
+        if (btnVerTodos != null) {
+            btnVerTodos.addActionListener(e -> actualizarTabla()); // Este metodo carga todos
+        }
+
         // 4. Cargar datos
         actualizarTabla();
     }
@@ -50,24 +64,57 @@ public class GestionTrabajador extends JPanel {
         }
     }
 
+
     public void actualizarTabla() {
+        cargarDatosATabla(trabajadorService.listarTrabajadores());
+        if (txtFiltroDni != null) {
+            txtFiltroDni.setText("");
+        }
+    }
+
+    private void cargarDatosATabla(List<Trabajador> trabajadores) {
         modeloTabla.setRowCount(0); // Limpiar la tabla
-        List<Trabajador> trabajadores = trabajadorService.listarTrabajadores();
         for (Trabajador t : trabajadores) {
-            // **MODIFICACIÓN AQUÍ:** Incluyendo Apellido, DNI, Email y Estado.
             modeloTabla.addRow(new Object[]{
                     t.getTrabajadorID(),
                     t.getNombre(),
-                    t.getApellido(),       // NUEVO
-                    t.getDni(),            // NUEVO
+                    t.getApellido(),
+                    t.getDni(),
                     t.getUsuarioLogin(),
                     t.getNombreRol(),
                     t.getTelefono(),
-                    t.getEmail(),          // NUEVO
-                    t.getEstado(),         // NUEVO
+                    t.getEmail(),
+                    t.getEstado(),
                     t.getFechaRegistro(),
 
             });
+        }
+    }
+
+    private void buscarPorDni() {
+        String dni = txtFiltroDni.getText().trim();
+
+        if (dni.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese un DNI para buscar.", "Filtro Requerido", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Validación básica de DNI (8 dígitos)
+        if (!dni.matches("\\d{8}")) {
+            JOptionPane.showMessageDialog(this, "El DNI debe contener exactamente 8 números.", "Dato Inválido", JOptionPane.WARNING_MESSAGE);
+            txtFiltroDni.requestFocus();
+            return;
+        }
+
+        Trabajador trabajador = trabajadorService.obtenerTrabajadorPorDni(dni);
+
+        if (trabajador != null) {
+            // Si encuentra el trabajador, carga solo ese trabajador
+            cargarDatosATabla(Collections.singletonList(trabajador));
+        } else {
+            // Si no lo encuentra, limpia la tabla e informa
+            cargarDatosATabla(Collections.emptyList());
+            JOptionPane.showMessageDialog(this, "No se encontró ningún trabajador con el DNI: " + dni, "Búsqueda Fallida", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -97,15 +144,66 @@ public class GestionTrabajador extends JPanel {
         }
     }
 
+    private void verificarSeleccion() {
+        // Solo aplica la lógica avanzada si el usuario en sesión es Administrador
+        if (!SessionManager.esAdministrador()) {
+            return;
+        }
+
+        int fila = tablaTrabajadores.getSelectedRow();
+        boolean habilitarEditar = true;
+        boolean habilitarEliminar = true;
+
+        if (fila != -1) {
+            int trabajadorID = (int) modeloTabla.getValueAt(fila, 0);
+            String nombreRol = (String) modeloTabla.getValueAt(fila, 5); // La columna 5 es "Rol"
+
+            // Obtener ID del usuario en sesión
+            int idSesion = SessionManager.getCurrentTrabajador().getTrabajadorID();
+
+            // REGLAS AVANZADAS:
+            boolean esAdmin = "Administrador".equalsIgnoreCase(nombreRol);
+            boolean esMismaCuenta = (trabajadorID == idSesion);
+
+            if (esAdmin) {
+                // Si selecciona a un Admin (incluyéndose a sí mismo)
+                habilitarEliminar = false; // No puede eliminar a ningún Admin.
+                if (esMismaCuenta) {
+                    // Si se edita a sí mismo, SI puede editar (Edición de datos propios está permitida)
+                    habilitarEditar = true;
+                } else {
+                    // Si edita a otro Admin, la edición solo permite cambiar el estado (el EditorTrabajador lo restringirá)
+                    habilitarEditar = true;
+                }
+            }
+        }
+
+        // Aplicar la restricción al botón Eliminar
+        btnEliminar.setEnabled(habilitarEliminar);
+
+    }
+
     private void eliminarTrabajadorSeleccionado() {
         int fila = tablaTrabajadores.getSelectedRow();
         if (fila == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un trabajador para eliminar.", "Acción Requerida", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        int trabajadorID = (int) modeloTabla.getValueAt(fila, 0);
+        String nombreRol = (String) modeloTabla.getValueAt(fila, 5);
+        int idSesion = SessionManager.getCurrentTrabajador().getTrabajadorID();
+
+        boolean esAdmin = "Administrador".equalsIgnoreCase(nombreRol);
+        boolean esMismaCuenta = (trabajadorID == idSesion);
+
+        if (SessionManager.esAdministrador() && (esAdmin || esMismaCuenta)) {
+            JOptionPane.showMessageDialog(this, "Operación Prohibida: No puedes eliminar un Administrador ni tu propia cuenta.", "Error de Seguridad", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este trabajador?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
         if (confirmacion == JOptionPane.YES_OPTION) {
-            int trabajadorID = (int) modeloTabla.getValueAt(fila, 0);
 
             try {
                 // Llama al servicio, que contiene la lógica de seguridad

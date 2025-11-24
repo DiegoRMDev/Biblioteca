@@ -43,6 +43,39 @@
           </component>
         </children>
       </grid>
+      <grid id="51770" binding="Filtros" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="416d8" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="DNI:"/>
+            </properties>
+          </component>
+          <component id="19f3d" class="javax.swing.JTextField" binding="txtFiltroDni">
+            <constraints/>
+            <properties>
+              <preferredSize width="89" height="28"/>
+            </properties>
+          </component>
+          <component id="f644d" class="javax.swing.JButton" binding="btnBuscarDni">
+            <constraints/>
+            <properties>
+              <preferredSize width="78" height="28"/>
+              <text value="Buscar"/>
+            </properties>
+          </component>
+          <component id="7abed" class="javax.swing.JButton" binding="btnVerTodos">
+            <constraints/>
+            <properties>
+              <preferredSize width="78" height="28"/>
+              <text value="Limpiar"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>
