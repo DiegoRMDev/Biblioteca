@@ -156,7 +156,7 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
     @Override
     public Trabajador obtenerPorDni(String dni) {
         // 1. LA CONSULTA SQL (Con el JOIN clave)
-        // Seleccionamos todo de Trabajadores (t.*) Y el nombre del rol de la tabla Roles (r.NombreRol)
+        // Seleccionamos Trabajadores (t.*) Y el nombre del rol de la tabla Roles (r.NombreRol)
         // Unimos las tablas donde coincidan los IDs (t.RolID = r.RolID)
         String sql = "SELECT t.*, r.NombreRol FROM Trabajadores t " +
                 "INNER JOIN Roles r ON t.RolID = r.RolID " +
@@ -168,7 +168,7 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     // 2. CREAR EL OBJETO BASE
-                    // Este método (que ya tienes) lee los datos de la tabla 'Trabajadores'
+                    // Este metodo (que ya tienes) lee los datos de la tabla 'Trabajadores'
                     Trabajador trabajador = extraerTrabajadorDeResultSet(rs);
 
                     // 3. LLENAR EL DATO FALTANTE (Del JOIN)

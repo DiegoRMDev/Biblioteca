@@ -8,8 +8,8 @@ import org.biblioteca.util.SessionManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
+import java.util.Collections;
 import java.util.List;
-import javax.swing.event.ListSelectionListener;
 
 public class GestionTrabajador extends JPanel {
     private JPanel mainPanel;
@@ -18,6 +18,10 @@ public class GestionTrabajador extends JPanel {
     private JButton btnNuevo;
     private JButton btnEditar;
     private JButton btnEliminar;
+    private JPanel Filtros;
+    private JTextField txtFiltroDni;
+    private JButton btnBuscarDni;
+    private JButton btnVerTodos;
 
     private DefaultTableModel modeloTabla;
     private TrabajadorService trabajadorService;
@@ -40,6 +44,13 @@ public class GestionTrabajador extends JPanel {
 
         tablaTrabajadores.getSelectionModel().addListSelectionListener(e -> verificarSeleccion());
 
+        if (btnBuscarDni != null) {
+            btnBuscarDni.addActionListener(e -> buscarPorDni());
+        }
+        if (btnVerTodos != null) {
+            btnVerTodos.addActionListener(e -> actualizarTabla()); // Este método carga todos
+        }
+
         // 4. Cargar datos
         actualizarTabla();
     }
@@ -53,24 +64,57 @@ public class GestionTrabajador extends JPanel {
         }
     }
 
+
     public void actualizarTabla() {
+        cargarDatosATabla(trabajadorService.listarTrabajadores());
+        if (txtFiltroDni != null) {
+            txtFiltroDni.setText("");
+        }
+    }
+
+    private void cargarDatosATabla(List<Trabajador> trabajadores) {
         modeloTabla.setRowCount(0); // Limpiar la tabla
-        List<Trabajador> trabajadores = trabajadorService.listarTrabajadores();
         for (Trabajador t : trabajadores) {
-            // **MODIFICACIÓN AQUÍ:** Incluyendo Apellido, DNI, Email y Estado.
             modeloTabla.addRow(new Object[]{
                     t.getTrabajadorID(),
                     t.getNombre(),
-                    t.getApellido(),       // NUEVO
-                    t.getDni(),            // NUEVO
+                    t.getApellido(),
+                    t.getDni(),
                     t.getUsuarioLogin(),
                     t.getNombreRol(),
                     t.getTelefono(),
-                    t.getEmail(),          // NUEVO
-                    t.getEstado(),         // NUEVO
+                    t.getEmail(),
+                    t.getEstado(),
                     t.getFechaRegistro(),
 
             });
+        }
+    }
+
+    private void buscarPorDni() {
+        String dni = txtFiltroDni.getText().trim();
+
+        if (dni.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese un DNI para buscar.", "Filtro Requerido", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Validación básica de DNI (8 dígitos)
+        if (!dni.matches("\\d{8}")) {
+            JOptionPane.showMessageDialog(this, "El DNI debe contener exactamente 8 números.", "Dato Inválido", JOptionPane.WARNING_MESSAGE);
+            txtFiltroDni.requestFocus();
+            return;
+        }
+
+        Trabajador trabajador = trabajadorService.obtenerTrabajadorPorDni(dni);
+
+        if (trabajador != null) {
+            // Si encuentra el trabajador, carga solo ese trabajador
+            cargarDatosATabla(Collections.singletonList(trabajador));
+        } else {
+            // Si no lo encuentra, limpia la tabla e informa
+            cargarDatosATabla(Collections.emptyList());
+            JOptionPane.showMessageDialog(this, "No se encontró ningún trabajador con el DNI: " + dni, "Búsqueda Fallida", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

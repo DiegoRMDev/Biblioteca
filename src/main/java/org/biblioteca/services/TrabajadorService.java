@@ -215,4 +215,12 @@ public class TrabajadorService {
     public Trabajador obtenerPorId(int id) {
         return trabajadorDAO.obtenerPorId(id);
     }
+
+
+    public Trabajador obtenerTrabajadorPorDni(String dni) {
+        if (dni == null || dni.trim().isEmpty()) {
+            return null;
+        }
+        return trabajadorDAO.obtenerPorDni(dni);
+    }
 }
