@@ -1,5 +1,6 @@
 package org.biblioteca.presentacion;
 
+import org.biblioteca.util.SessionManager;
 import javax.swing.*;
 import java.awt.*;
 
@@ -27,7 +28,11 @@ public class GestionLibrosDashboard extends JPanel implements Actualizable {
 
         // Usamos la instancia creada para añadirla
         tabbedPaneInterno.addTab("Libros", null, gestionLibro, "Gestionar información de los libros");
-        tabbedPaneInterno.addTab("Movimientos (Kardex)", null, new GestionMovimientos(), "Historial de entradas y salidas");
+
+        // 2. LÓGICA DE PERMISOS: Solo para el Administrador
+        if (SessionManager.esAdministrador()) {
+            tabbedPaneInterno.addTab("Movimientos (Kardex)", null, new GestionMovimientos(), "Historial de entradas y salidas");
+        }
 
         // Las otras vistas no necesitan ser almacenadas si no las vamos a refrescar
         tabbedPaneInterno.addTab("Autores", null, new GestionAutor(), "Gestionar los autores de los libros");
