@@ -14,12 +14,14 @@ public class MovimientoLibro {
     private String observaciones;
     private Integer proveedorID; // Puede ser NULL en la BD
     private int trabajadorID;
+    private Integer donanteID;
 
     public MovimientoLibro() {
     }
 
     // Constructor para CARGAR datos desde la BD
-    public MovimientoLibro(int movimientoID, int libroID, Timestamp fechaMovimiento, String tipoMovimiento, int cantidad, String observaciones, Integer proveedorID, int trabajadorID) {
+    public MovimientoLibro(int movimientoID, int libroID, Timestamp fechaMovimiento, String tipoMovimiento, int cantidad, String observaciones, Integer proveedorID, Integer donanteID, int trabajadorID) {
+        // ... asignaciones existentes ...
         this.movimientoID = movimientoID;
         this.libroID = libroID;
         this.fechaMovimiento = fechaMovimiento;
@@ -27,20 +29,19 @@ public class MovimientoLibro {
         this.cantidad = cantidad;
         this.observaciones = observaciones;
         this.proveedorID = proveedorID;
+        this.donanteID = donanteID; // Asignar nuevo campo
         this.trabajadorID = trabajadorID;
     }
 
     // Constructor para REGISTRAR un nuevo movimiento (Debe usar setters para validar)
-    public MovimientoLibro(int libroID, String tipoMovimiento, int cantidad, String observaciones, Integer proveedorID, int trabajadorID) {
-        // Al registrar, usamos los setters
+    public MovimientoLibro(int libroID, String tipoMovimiento, int cantidad, String observaciones, Integer proveedorID, Integer donanteID, int trabajadorID) {
         this.setLibroID(libroID);
         this.setTipoMovimiento(tipoMovimiento);
         this.setCantidad(cantidad);
         this.setObservaciones(observaciones);
         this.setProveedorID(proveedorID);
+        this.setDonanteID(donanteID); // Usar el setter
         this.setTrabajadorID(trabajadorID);
-
-        // La fecha de movimiento se establece automáticamente al crear el objeto
         this.setFechaMovimiento(Timestamp.from(Instant.now()));
     }
 
@@ -57,6 +58,15 @@ public class MovimientoLibro {
     public int getLibroID() {
 
         return libroID;
+    }
+    public Integer getDonanteID() { return donanteID; }
+
+    public void setDonanteID(Integer donanteID) {
+        // Validación opcional: ID positivo si no es nulo
+        if (donanteID != null && donanteID <= 0) {
+            throw new IllegalArgumentException("El ID del Donante inválido.");
+        }
+        this.donanteID = donanteID;
     }
 
     /**
@@ -185,5 +195,24 @@ public class MovimientoLibro {
             throw new IllegalArgumentException("El ID del Trabajador es inválido. Debe ser un valor positivo.");
         }
         this.trabajadorID = trabajadorID;
+    }
+
+    private String nombreTrabajador; // Nombre + Apellido
+    private String tituloLibro;
+
+    public String getNombreTrabajador() {
+        return nombreTrabajador;
+    }
+
+    public void setNombreTrabajador(String nombreTrabajador) {
+        this.nombreTrabajador = nombreTrabajador;
+    }
+
+    public String getTituloLibro() {
+        return tituloLibro;
+    }
+
+    public void setTituloLibro(String tituloLibro) {
+        this.tituloLibro = tituloLibro;
     }
 }

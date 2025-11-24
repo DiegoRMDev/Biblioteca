@@ -1,9 +1,6 @@
 package org.biblioteca.services;
 
-import org.biblioteca.dao.MovimientoLibroDAO;
-import org.biblioteca.dao.MovimientoLibroDAOImpl;
-import org.biblioteca.dao.PrestamoDAO;
-import org.biblioteca.dao.PrestamoDAOImpl;
+import org.biblioteca.dao.*;
 import org.biblioteca.entities.MovimientoLibro;
 import org.biblioteca.entities.Prestamo;
 import org.biblioteca.entities.PrestamoDetalle;
@@ -17,9 +14,11 @@ public class PrestamoService {
 
     private PrestamoDAO prestamoDAO;
     private MovimientoLibroDAO movimientoDAO;
+    private MultaDAO multaDAO;
     public PrestamoService() {
         this.prestamoDAO = new PrestamoDAOImpl();
         this.movimientoDAO = new MovimientoLibroDAOImpl();;
+        this.multaDAO = new MultaDAOImp();
     }
 
     public void registrarPrestamo(Prestamo prestamo, List<PrestamoDetalle> detalles) throws Exception {
@@ -27,11 +26,20 @@ public class PrestamoService {
         if (prestamo.getLectorID() <= 0) {
             throw new IllegalArgumentException("Debe seleccionar un lector.");
         }
+
+        //  REGLA DE NEGOCIO ---
+        if (prestamoDAO.tienePrestamoPendiente(prestamo.getLectorID())) {
+            throw new IllegalStateException("El lector ya tiene un préstamo PENDIENTE. Debe realizar la devolución antes de solicitar nuevos libros.");
+        }
+        // ------------------------------
+
+        // Regla 2: Multas pendientes (NUEVA)
+        if (multaDAO.tieneMultaPendiente(prestamo.getLectorID())) {
+            throw new IllegalStateException("El lector tiene MULTAS pendientes de pago. No puede realizar nuevos préstamos hasta regularizar su situación.");
+        }
+
         if (prestamo.getTrabajadorID() <= 0) {
             throw new IllegalArgumentException("Error de sesión, no se encontró al trabajador.");
-        }
-        if (prestamo.getFechaDevolucionPrevista().before(prestamo.getFechaPrestamo())) {
-            throw new IllegalArgumentException("La fecha de devolución no puede ser anterior a la fecha del préstamo.");
         }
         if (detalles == null || detalles.isEmpty()) {
             throw new IllegalArgumentException("El préstamo debe tener al menos un libro.");
@@ -45,6 +53,7 @@ public class PrestamoService {
                         "SalidaPrestamo", // Tipo Movimiento
                         detalle.getCantidad(),
                         "Préstamo ID: " + prestamo.getPrestamoID(), // Observación útil
+                        null,
                         null,
                         trabajadorID
                 );
@@ -85,6 +94,7 @@ public class PrestamoService {
                             detalle.getCantidad(),
                             "Devolución Préstamo ID: " + prestamoID,
                             null,
+                            null,
                             trabajadorActualID
                     );
                     movimientoDAO.insertar(movimiento);
@@ -111,4 +121,6 @@ public class PrestamoService {
 
         return prestamoDAO.obtenerPorFiltros(dni, fechaInicio, fechaFin);
     }
+
+
 }

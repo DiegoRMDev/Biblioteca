@@ -1,10 +1,8 @@
 package org.biblioteca.services;
 
-import org.biblioteca.dao.LibroDAO;
-import org.biblioteca.dao.LibroDAOImpl;
-import org.biblioteca.dao.MovimientoLibroDAO;
-import org.biblioteca.dao.MovimientoLibroDAOImpl;
+import org.biblioteca.dao.*;
 import org.biblioteca.entities.Autor;
+import org.biblioteca.entities.Donante;
 import org.biblioteca.entities.Libro;
 import org.biblioteca.entities.MovimientoLibro;
 import org.biblioteca.util.SessionManager;
@@ -14,63 +12,87 @@ import java.util.List;
 public class LibroService {
     private LibroDAO libroDAO;
     private MovimientoLibroDAO movimientoDAO;
+    private DonanteDAO donanteDAO;
+
     public LibroService() {
         this.libroDAO = new LibroDAOImpl();
         this.movimientoDAO = new MovimientoLibroDAOImpl();
+        this.donanteDAO = new DonanteDAOImpl();
     }
 
-    public void registrarLibro(Libro libro, List<Autor> autores, Integer proveedorID) throws IllegalArgumentException {
-        // Las validaciones de los campos del libro ya están en tu clase Libro
+    public void registrarLibro(Libro libro, List<Autor> autores, Integer proveedorID, Donante datosDonante) throws IllegalArgumentException {
+
+        // 1. Validar ISBN (Existente)
         Libro libroExistente = libroDAO.obtenerPorIsbn(libro.getIsbn());
         if (libroExistente != null) {
-            throw new IllegalArgumentException("El ISBN '" + libro.getIsbn() + "' ya está registrado en otro libro.");
+            throw new IllegalArgumentException("El ISBN '" + libro.getIsbn() + "' ya está registrado.");
         }
 
-        // --- CORRECCIÓN PARA EVITAR DOBLE STOCK ---
-        // 1. Guardamos el stock real que ingresó el usuario en una variable temporal
+        // Guardamos el stock real que ingresó el usuario
         int stockReal = libro.getStock();
 
-        // 2. Insertamos el libro con Stock 0.
-        // Así, cuando el trigger del movimiento se ejecute, sumará: 0 + 25 = 25 (Correcto)
+        // ==============================================================================
+        // 2. VALIDACIÓN ANTICIPADA (CORRECCIÓN)
+        // Validamos Donante/Proveedor ANTES de guardar el libro en la BD.
+        // ==============================================================================
+        if (stockReal > 0) {
+            boolean tieneProveedor = (proveedorID != null && proveedorID > 0);
+            boolean tieneDatosDonante = (datosDonante != null && datosDonante.getNombre() != null && !datosDonante.getNombre().trim().isEmpty());
+
+            if (!tieneProveedor && !tieneDatosDonante) {
+                // Si lanzamos el error aquí, el código se detiene y NO se guarda el libro.
+                throw new IllegalArgumentException("Para registrar stock inicial: Si no selecciona un proveedor, debe ingresar los datos del donante.");
+            }
+        }
+
+        // 3. Insertamos el libro con Stock 0 (Solo si pasó la validación anterior)
         libro.setStock(0);
         libroDAO.insertar(libro, autores);
 
-        // 3. Usamos la variable 'stockReal' para decidir si crear el movimiento
+        // 4. Registrar el Movimiento de Stock (Si aplica)
         if (stockReal > 0) {
             try {
                 int trabajadorID = SessionManager.getCurrentTrabajador().getTrabajadorID();
-
-                // --- LÓGICA DE DECISIÓN ---
                 String tipoMovimiento;
                 String observacion;
+                Integer donanteID = null;
 
-                if (proveedorID != null) {
+                // Lógica de Negocio: Proveedor vs Donante
+                if (proveedorID != null && proveedorID > 0) {
                     tipoMovimiento = "IngresoProveedor";
                     observacion = "Compra Inicial - Nuevo Libro";
                 } else {
+                    // ES UNA DONACIÓN (Ya validamos arriba que datosDonante no es null)
+
+                    // Registramos al donante en este momento
+                    donanteDAO.insertar(datosDonante);
+                    donanteID = datosDonante.getDonanteID();
+
                     tipoMovimiento = "IngresoDonacion";
-                    observacion = "Donación / Inicial - Nuevo Libro";
+                    observacion = "Donación Inicial - " + datosDonante.getNombre();
                 }
-                // --------------------------
 
                 MovimientoLibro movimiento = new MovimientoLibro(
                         libro.getLibroID(),
                         tipoMovimiento,
-                        stockReal, // 4. Usamos el 'stockReal' para el movimiento
+                        stockReal,
                         observacion,
                         proveedorID,
+                        donanteID,
                         trabajadorID
                 );
 
                 movimientoDAO.insertar(movimiento);
-                // Aquí se dispara el Trigger en la BD y actualiza el stock de 0 a 'stockReal'
 
             } catch (Exception e) {
                 e.printStackTrace();
-                // Opcional: Podrías revertir la inserción del libro si el movimiento falla
+                // Opcional: Si falla el movimiento, podríamos borrar el libro manualmente para no dejar datos huérfanos.
+                // libroDAO.eliminar(libro.getLibroID());
+                throw new RuntimeException("El libro se guardó, pero hubo un error al registrar el movimiento: " + e.getMessage());
             }
         }
     }
+
 
     public void modificarLibro(Libro libro, List<Autor> autores) throws IllegalArgumentException {
         Libro libroExistente = libroDAO.obtenerPorIsbn(libro.getIsbn());

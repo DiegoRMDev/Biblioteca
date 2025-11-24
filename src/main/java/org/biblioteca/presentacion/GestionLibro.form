@@ -12,10 +12,10 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="2c" class="javax.swing.JLabel">
+          <component id="96333" class="javax.swing.JLabel">
             <constraints/>
             <properties>
-              <text value="Buscar:"/>
+              <text value="Nombre del Libro:"/>
             </properties>
           </component>
           <component id="txtSearch" class="javax.swing.JTextField" binding="txtBuscar">

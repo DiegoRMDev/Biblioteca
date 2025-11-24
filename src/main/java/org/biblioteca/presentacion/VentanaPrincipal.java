@@ -87,7 +87,18 @@ public class VentanaPrincipal extends JFrame {
         btnLectores.addActionListener(e -> abrirVista("Gestión de Lectores", new GestionLector()));
 
         // Botón PRÉSTAMOS (Placeholder)
-        btnPrestamos.addActionListener(e -> abrirVista("Gestión de Préstamos", new GestionPrestamo()));
+        btnPrestamos.addActionListener(e -> {
+            JTabbedPane panelCirculacion = new JTabbedPane();
+
+            // Pestaña 1: Tu gestión de préstamos actual
+            panelCirculacion.addTab("Préstamos", null, new GestionPrestamo(), "Gestionar Préstamos");
+
+            // Pestaña 2: Tu nueva gestión de multas diseñada visualmente
+            panelCirculacion.addTab("Multas", null, new GestionMultas(), "Gestionar Pagos");
+
+            abrirVista("Módulo de Circulación", panelCirculacion);
+
+        });
 
         btnInicio.addActionListener(e -> abrirVista("Dashboard de Reportes", new DashboardReportes()));
 
@@ -109,7 +120,7 @@ public class VentanaPrincipal extends JFrame {
     /**
      * Gestiona la apertura de una vista en el JTabbedPane.
      */
-    private void abrirVista(String titulo, JPanel vista) {
+    private void abrirVista(String titulo, JComponent vista) {
 
         int currentIndex = contentPanel.indexOfTab(titulo);
         if (currentIndex != -1 && contentPanel.getSelectedIndex() == currentIndex) {

@@ -17,8 +17,16 @@ public class MultaService {
         return multaDAO.obtenerTodas();
     }
 
-    public Multa obtenerPorId(int id) throws Exception {
-        return ((MultaDAOImp) multaDAO).obtenerPorId(id);
+    public List<Multa> buscarMultasPorDni(String dni) {
+        if (dni == null || dni.trim().isEmpty()) {
+            return listarMultas();
+        }
+        return multaDAO.obtenerPorDniLector(dni);
+    }
+
+    public void pagarMulta(int multaID) {
+        // Aquí podrías agregar lógica de auditoría o caja si quisieras
+        multaDAO.eliminar(multaID);
     }
 
 }

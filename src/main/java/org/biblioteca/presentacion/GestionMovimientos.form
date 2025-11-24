@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionMovimientos">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="655" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="93bff" binding="topPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="fed67" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Libro:"/>
+            </properties>
+          </component>
+          <component id="91bd4" class="javax.swing.JTextField" binding="txtFiltroLibro">
+            <constraints/>
+            <properties>
+              <preferredSize width="100" height="30"/>
+            </properties>
+          </component>
+          <component id="ab044" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Tipo:"/>
+            </properties>
+          </component>
+          <component id="9035" class="javax.swing.JComboBox" binding="cboFiltroTipo">
+            <constraints/>
+            <properties>
+              <preferredSize width="120" height="30"/>
+            </properties>
+          </component>
+          <component id="fdb75" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Trabajador"/>
+            </properties>
+          </component>
+          <component id="b47c7" class="javax.swing.JTextField" binding="txtFiltroTrabajador">
+            <constraints/>
+            <properties>
+              <preferredSize width="100" height="30"/>
+            </properties>
+          </component>
+          <component id="96627" class="javax.swing.JButton" binding="btnBuscar">
+            <constraints/>
+            <properties>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="0"/>
+              <text value="Buscar"/>
+            </properties>
+          </component>
+          <component id="cc27" class="javax.swing.JButton" binding="btnLimpiar">
+            <constraints/>
+            <properties>
+              <text value="Limpiar"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <scrollpane id="c5670" binding="centralPanel">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="43152" class="javax.swing.JTable" binding="tablaMovimientos" custom-create="true">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+    </children>
+  </grid>
+</form>
