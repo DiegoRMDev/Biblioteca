@@ -48,7 +48,7 @@ public class GestionTrabajador extends JPanel {
             btnBuscarDni.addActionListener(e -> buscarPorDni());
         }
         if (btnVerTodos != null) {
-            btnVerTodos.addActionListener(e -> actualizarTabla()); // Este método carga todos
+            btnVerTodos.addActionListener(e -> actualizarTabla()); // Este metodo carga todos
         }
 
         // 4. Cargar datos
