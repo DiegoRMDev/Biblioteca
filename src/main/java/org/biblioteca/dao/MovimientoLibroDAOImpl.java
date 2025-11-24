@@ -16,24 +16,34 @@ public class MovimientoLibroDAOImpl implements  MovimientoLibroDAO{
     }
     @Override
     public void insertar(MovimientoLibro movimiento) {
-        String sql = "INSERT INTO MovimientosLibros (LibroID, FechaMovimiento, TipoMovimiento, Cantidad, Observaciones, ProveedorID, TrabajadorID) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // Agregamos DonanteID a la consulta
+        String sql = "INSERT INTO MovimientosLibros (LibroID, FechaMovimiento, TipoMovimiento, Cantidad, Observaciones, ProveedorID, DonanteID, TrabajadorID) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            // ... set 1 al 5
             stmt.setInt(1, movimiento.getLibroID());
             stmt.setTimestamp(2, movimiento.getFechaMovimiento());
             stmt.setString(3, movimiento.getTipoMovimiento());
             stmt.setInt(4, movimiento.getCantidad());
             stmt.setString(5, movimiento.getObservaciones());
 
-            // ProveedorID puede ser nulo
+            // ProveedorID (Param 6)
             if (movimiento.getProveedorID() != null) {
                 stmt.setInt(6, movimiento.getProveedorID());
             } else {
                 stmt.setNull(6, java.sql.Types.INTEGER);
             }
 
-            stmt.setInt(7, movimiento.getTrabajadorID());
+            // DonanteID (Param 7 )
+            if (movimiento.getDonanteID() != null) {
+                stmt.setInt(7, movimiento.getDonanteID());
+            } else {
+                stmt.setNull(7, java.sql.Types.INTEGER);
+            }
+
+            // TrabajadorID (Param 8)
+            stmt.setInt(8, movimiento.getTrabajadorID());
 
             stmt.executeUpdate();
 
@@ -41,7 +51,5 @@ public class MovimientoLibroDAOImpl implements  MovimientoLibroDAO{
             e.printStackTrace();
             throw new RuntimeException("Error al registrar el movimiento del libro.", e);
         }
-
-
     }
 }

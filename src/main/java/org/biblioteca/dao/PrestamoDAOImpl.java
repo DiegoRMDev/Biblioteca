@@ -228,4 +228,26 @@ public class PrestamoDAOImpl implements PrestamoDAO {
         }
         return prestamos;
     }
+
+    @Override
+    public boolean tienePrestamoPendiente(int lectorID) {
+        // Contamos si existe algún préstamo asociado al lector que NO esté 'Devuelto'
+        // O explícitamente que esté 'Pendiente' o 'Retrasado'.
+        String sql = "SELECT COUNT(*) FROM Prestamos WHERE LectorID = ? AND Estado = 'Pendiente' ";
+
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setInt(1, lectorID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Si el conteo es mayor a 0, significa que tiene préstamos activos
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al verificar préstamos pendientes: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+
+    }
 }

@@ -27,11 +27,15 @@ public class PrestamoService {
         if (prestamo.getLectorID() <= 0) {
             throw new IllegalArgumentException("Debe seleccionar un lector.");
         }
+
+        //  REGLA DE NEGOCIO ---
+        if (prestamoDAO.tienePrestamoPendiente(prestamo.getLectorID())) {
+            throw new IllegalStateException("El lector ya tiene un préstamo PENDIENTE. Debe realizar la devolución antes de solicitar nuevos libros.");
+        }
+        // ------------------------------
+
         if (prestamo.getTrabajadorID() <= 0) {
             throw new IllegalArgumentException("Error de sesión, no se encontró al trabajador.");
-        }
-        if (prestamo.getFechaDevolucionPrevista().before(prestamo.getFechaPrestamo())) {
-            throw new IllegalArgumentException("La fecha de devolución no puede ser anterior a la fecha del préstamo.");
         }
         if (detalles == null || detalles.isEmpty()) {
             throw new IllegalArgumentException("El préstamo debe tener al menos un libro.");
@@ -45,6 +49,7 @@ public class PrestamoService {
                         "SalidaPrestamo", // Tipo Movimiento
                         detalle.getCantidad(),
                         "Préstamo ID: " + prestamo.getPrestamoID(), // Observación útil
+                        null,
                         null,
                         trabajadorID
                 );
@@ -85,6 +90,7 @@ public class PrestamoService {
                             detalle.getCantidad(),
                             "Devolución Préstamo ID: " + prestamoID,
                             null,
+                            null,
                             trabajadorActualID
                     );
                     movimientoDAO.insertar(movimiento);
@@ -111,4 +117,6 @@ public class PrestamoService {
 
         return prestamoDAO.obtenerPorFiltros(dni, fechaInicio, fechaFin);
     }
+
+
 }

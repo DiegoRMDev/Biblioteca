@@ -22,4 +22,6 @@ public interface PrestamoDAO {
 
     List<Prestamo> obtenerPorFiltros(String dni, Timestamp fechaInicio, Timestamp fechaFin);
 
+    boolean tienePrestamoPendiente(int lectorID);
+
 }

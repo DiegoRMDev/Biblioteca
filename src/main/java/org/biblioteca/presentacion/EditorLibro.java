@@ -1,9 +1,6 @@
 package org.biblioteca.presentacion;
 
-import org.biblioteca.entities.Autor;
-import org.biblioteca.entities.Categoria;
-import org.biblioteca.entities.Libro;
-import org.biblioteca.entities.Proveedor;
+import org.biblioteca.entities.*;
 import org.biblioteca.services.AutorService;
 import org.biblioteca.services.CategoriaService;
 import org.biblioteca.services.LibroService;
@@ -31,6 +28,8 @@ public class EditorLibro extends JDialog {
     private JButton btnCancelar;
     private JComboBox cboEstado;
     private JComboBox cboProveedor;
+    private JTextField txtDonante;
+    private JLabel lblDonante;
 
 
     private LibroService libroService;
@@ -58,6 +57,25 @@ public class EditorLibro extends JDialog {
 
         btnGuardar.addActionListener(e -> guardarLibro());
         btnCancelar.addActionListener(e -> dispose());
+        cboProveedor.addActionListener(e -> actualizarVisibilidadDonante());
+        actualizarVisibilidadDonante();
+    }
+
+    private void actualizarVisibilidadDonante() {
+        Proveedor proveedorSeleccionado = (Proveedor) cboProveedor.getSelectedItem();
+
+        // Si el ID es 0 o null (asumiendo que 0 es "Seleccione..."), es donación
+        boolean esDonacion = proveedorSeleccionado == null || proveedorSeleccionado.getProveedorID() == 0;
+
+        if (txtDonante != null) {
+            txtDonante.setEnabled(esDonacion);
+            txtDonante.setVisible(esDonacion);
+            if (lblDonante != null) lblDonante.setVisible(esDonacion);
+
+            if (!esDonacion) {
+                txtDonante.setText(""); // Limpiar si cambia a proveedor
+            }
+        }
     }
 
     private void cargarDatosParaSeleccion() {
@@ -160,7 +178,7 @@ public class EditorLibro extends JDialog {
             return;
         }
 
-        Proveedor proveedorSeleccionado = (Proveedor) cboProveedor.getSelectedItem();
+
 
         // 4. VALIDACIÓN DE FORMATOS NUMÉRICOS
         int anioPub;
@@ -196,21 +214,28 @@ public class EditorLibro extends JDialog {
             libro.setStock(stock); // Valida que no sea negativo
             libro.setCategoriaID(categoriaSeleccionada.getCategoriaID());
 
+            // Recoger Proveedor
+            Proveedor proveedorSeleccionado = (Proveedor) cboProveedor.getSelectedItem();
+            Integer idProv = null;
+            if (proveedorSeleccionado != null && proveedorSeleccionado.getProveedorID() > 0) {
+                idProv = proveedorSeleccionado.getProveedorID();
+            }
+
+            // Recoger Donante (Nuevo)
+            Donante donante = null;
+            if (idProv == null) { // Si no hay proveedor, intentamos crear un donante
+                String nombreDonante = txtDonante.getText().trim();
+                // La validación de vacío se hará en el servicio o aquí mismo
+                if (!nombreDonante.isEmpty()) {
+                    donante = new Donante(nombreDonante);
+                }
+            }
+
             // Llamada al servicio (Valida ISBN duplicado)
             if (libroAEditar == null) {
-
-                if (stock > 0 && proveedorSeleccionado == null) {
-                    JOptionPane.showMessageDialog(this, "Debe seleccionar un Proveedor para registrar el stock inicial.", "Falta Proveedor", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                Integer idProv = null;
-                if (proveedorSeleccionado != null && proveedorSeleccionado.getProveedorID() > 0) {
-                    idProv = proveedorSeleccionado.getProveedorID();
-                }
-
-                libroService.registrarLibro(libro, autoresSeleccionados, idProv); // Ahora enviará null en vez de 0
+                // CAMBIO: Llamar al nuevo método con 4 argumentos
+                libroService.registrarLibro(libro, autoresSeleccionados, idProv, donante);
                 JOptionPane.showMessageDialog(this, "Libro registrado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
 
             } else {
                 libro.setLibroID(libroAEditar.getLibroID());
