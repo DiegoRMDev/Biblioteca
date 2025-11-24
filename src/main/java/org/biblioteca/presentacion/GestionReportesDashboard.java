@@ -26,7 +26,7 @@ public class GestionReportesDashboard extends JPanel {
 
         if (esAdmin) {
             // Solo el Administrador puede ver y usar este reporte con rango de fechas
-            tabbedPaneInterno.addTab("Top Libros (Rango de Fecha)", null,
+            tabbedPaneInterno.addTab("Top Libros (Mes)", null,
                     new GestionReporteTopLibPrest(), "Reporte analítico de libros más solicitados con filtros de fecha.");
         }
 
@@ -42,7 +42,7 @@ public class GestionReportesDashboard extends JPanel {
 
         if (puedeVerReportes) {
             // Añadir el nuevo reporte de Lectores Activos con rango de fechas
-            tabbedPaneInterno.addTab("Lectores Activos (Tendencia)", null,
+            tabbedPaneInterno.addTab("Lectores Activos (Meses)", null,
                     new GestionReporteLectoresActivos(), "Reporte de tendencia de lectores únicos activos por rango de fechas.");
         }
 

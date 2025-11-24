@@ -199,12 +199,19 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
 
     @Override
     public Trabajador obtenerPorId(int id) {
-        String sql = "SELECT * FROM Trabajadores WHERE TrabajadorID = ?";
+        String sql = "SELECT t.*, r.NombreRol FROM Trabajadores t " +
+                "INNER JOIN Roles r ON t.RolID = r.RolID " +
+                "WHERE t.TrabajadorID = ?";
+
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return extraerTrabajadorDeResultSet(rs);
+                    // Cargar el objeto base
+                    Trabajador trabajador = extraerTrabajadorDeResultSet(rs);
+                    trabajador.setNombreRol(rs.getString("NombreRol"));
+
+                    return trabajador;
                 }
             }
         } catch (SQLException e) {
@@ -218,7 +225,6 @@ public class TrabajadorDAOImpl implements TrabajadorDAO {
     public List<Trabajador> obtenerTodos() {
         List<Trabajador> trabajadores = new ArrayList<>();
 
-        // CORRECCIÓN: Añadimos el JOIN para traer el NombreRol
         String sql = "SELECT t.*, r.NombreRol " +
                 "FROM Trabajadores t " +
                 "INNER JOIN Roles r ON t.RolID = r.RolID " +
