@@ -2,6 +2,7 @@ package org.biblioteca.dao;
 
 import org.biblioteca.entities.Autor;
 import org.biblioteca.entities.Libro;
+import org.biblioteca.entities.MovimientoLibro;
 
 import java.util.List;
 
@@ -12,5 +13,6 @@ public interface LibroDAO {
     void actualizar(Libro libro, List<Autor> autores);
     void eliminar(int id);
     Libro obtenerPorIsbn(String isbn);
+
 
 }

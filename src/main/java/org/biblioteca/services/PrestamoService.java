@@ -1,9 +1,6 @@
 package org.biblioteca.services;
 
-import org.biblioteca.dao.MovimientoLibroDAO;
-import org.biblioteca.dao.MovimientoLibroDAOImpl;
-import org.biblioteca.dao.PrestamoDAO;
-import org.biblioteca.dao.PrestamoDAOImpl;
+import org.biblioteca.dao.*;
 import org.biblioteca.entities.MovimientoLibro;
 import org.biblioteca.entities.Prestamo;
 import org.biblioteca.entities.PrestamoDetalle;
@@ -17,9 +14,11 @@ public class PrestamoService {
 
     private PrestamoDAO prestamoDAO;
     private MovimientoLibroDAO movimientoDAO;
+    private MultaDAO multaDAO;
     public PrestamoService() {
         this.prestamoDAO = new PrestamoDAOImpl();
         this.movimientoDAO = new MovimientoLibroDAOImpl();;
+        this.multaDAO = new MultaDAOImp();
     }
 
     public void registrarPrestamo(Prestamo prestamo, List<PrestamoDetalle> detalles) throws Exception {
@@ -33,6 +32,11 @@ public class PrestamoService {
             throw new IllegalStateException("El lector ya tiene un préstamo PENDIENTE. Debe realizar la devolución antes de solicitar nuevos libros.");
         }
         // ------------------------------
+
+        // Regla 2: Multas pendientes (NUEVA)
+        if (multaDAO.tieneMultaPendiente(prestamo.getLectorID())) {
+            throw new IllegalStateException("El lector tiene MULTAS pendientes de pago. No puede realizar nuevos préstamos hasta regularizar su situación.");
+        }
 
         if (prestamo.getTrabajadorID() <= 0) {
             throw new IllegalArgumentException("Error de sesión, no se encontró al trabajador.");

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.biblioteca.presentacion.GestionMultas">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="65823" binding="topPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="69892" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="DNI Lector:"/>
+            </properties>
+          </component>
+          <component id="61f48" class="javax.swing.JTextField" binding="txtBuscarDni">
+            <constraints/>
+            <properties>
+              <preferredSize width="90" height="30"/>
+            </properties>
+          </component>
+          <component id="57aae" class="javax.swing.JButton" binding="btnBuscar">
+            <constraints/>
+            <properties>
+              <text value="Buscar"/>
+            </properties>
+          </component>
+          <component id="26e6f" class="javax.swing.JButton" binding="btnRefrescar">
+            <constraints/>
+            <properties>
+              <text value="Ver Todas"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <scrollpane id="d2fa9" binding="centralPanel">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="442db" class="javax.swing.JTable" binding="tablaMultas" custom-create="true">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+      <grid id="3314f" binding="bottomPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="1917f" class="javax.swing.JButton" binding="btnPagar">
+            <constraints/>
+            <properties>
+              <text value="Registrar Pago"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

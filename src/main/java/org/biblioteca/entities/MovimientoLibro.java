@@ -196,4 +196,23 @@ public class MovimientoLibro {
         }
         this.trabajadorID = trabajadorID;
     }
+
+    private String nombreTrabajador; // Nombre + Apellido
+    private String tituloLibro;
+
+    public String getNombreTrabajador() {
+        return nombreTrabajador;
+    }
+
+    public void setNombreTrabajador(String nombreTrabajador) {
+        this.nombreTrabajador = nombreTrabajador;
+    }
+
+    public String getTituloLibro() {
+        return tituloLibro;
+    }
+
+    public void setTituloLibro(String tituloLibro) {
+        this.tituloLibro = tituloLibro;
+    }
 }

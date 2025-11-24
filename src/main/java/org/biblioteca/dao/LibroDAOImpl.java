@@ -2,6 +2,7 @@ package org.biblioteca.dao;
 
 import org.biblioteca.entities.Autor;
 import org.biblioteca.entities.Libro;
+import org.biblioteca.entities.MovimientoLibro;
 import org.biblioteca.util.DBConnection;
 
 import java.sql.*;
@@ -254,6 +255,8 @@ public class LibroDAOImpl implements  LibroDAO{
         }
         return null;
     }
+
+
 
     private List<Autor> obtenerAutoresParaLibro(int libroId) throws SQLException {
         List<Autor> autores = new ArrayList<>();
