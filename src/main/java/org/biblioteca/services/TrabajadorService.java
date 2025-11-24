@@ -37,7 +37,7 @@ public class TrabajadorService {
         }
 
         // Validar DNI Único
-        if (trabajadorDAO.obtenerPorDni(dni) != null) { // Asumiendo que implementaste el método
+        if (trabajadorDAO.obtenerPorDni(dni) != null) { // Asumiendo que implementaste el metodo
             throw new IllegalArgumentException("El DNI '" + dni + "' ya está asociado a otro trabajador.");
         }
         // El constructor de Trabajador ahora recibe todos los campos nuevos
@@ -132,11 +132,11 @@ public class TrabajadorService {
                     // El RolID sigue siendo el mismo
                     trabajadorOriginal.getRolID() == trabajadorModificado.getRolID() &&
 
-                            // Nombre y Apellido no han cambiado (usando el método auxiliar)
+                            // Nombre y Apellido no han cambiado (usando el metodo auxiliar)
                             sonCadenasIguales(trabajadorOriginal.getNombre(), trabajadorModificado.getNombre()) &&
                             sonCadenasIguales(trabajadorOriginal.getApellido(), trabajadorModificado.getApellido()) &&
 
-                            // Email y Teléfono no han cambiado (usando el método auxiliar)
+                            // Email y Teléfono no han cambiado (usando el metodo auxiliar)
                             sonCadenasIguales(trabajadorOriginal.getEmail(), trabajadorModificado.getEmail()) &&
                             sonCadenasIguales(trabajadorOriginal.getTelefono(), trabajadorModificado.getTelefono()) &&
 
