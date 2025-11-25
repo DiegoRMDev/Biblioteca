@@ -14,7 +14,7 @@ public class DataInitializer {
     private static final String ROL_BIBLIOTECARIO = "Bibliotecario";
 
     private DataInitializer() {
-        // Constructor privado para evitar instanciación (Clase de Utilidad)
+
     }
 
     /**
@@ -59,28 +59,28 @@ public class DataInitializer {
     private static void inicializarTrabajadorAdmin() {
         System.out.println("Verificando Trabajador Administrador...");
 
-        if (trabajadorService.obtenerTrabajadorPorUsuarioLogin("JuanAdmin") == null) {
+        if (trabajadorService.obtenerTrabajadorPorUsuarioLogin("Juan15") == null) {
 
             Rol rolAdmin = rolService.obtenerRolPorNombre(ROL_ADMIN);
 
             if (rolAdmin != null) {
-                // MODIFICACIÓN: Usamos la nueva firma con los 8 parámetros
+
                 trabajadorService.registrarTrabajador(
-                        "Juan",              // Nombre
-                        "Perez",             // Apellido (NUEVO)
-                        "72345678",          // DNI (NUEVO - Debe tener 8 dígitos)
-                        "JuanAdmin",         // UsuarioLogin
-                        "admin123",          // Contrasena
-                        rolAdmin.getRolID(), // RolID
-                        "juan20@gmail.com", // Email (NUEVO)
-                        "988800999"          // Telefono (NUEVO)
+                        "Juan",
+                        "Perez",
+                        "72345678",
+                        "Juan15",
+                        "admin123",
+                        rolAdmin.getRolID(),
+                        "juan20@gmail.com",
+                        "988800999"
                 );
-                System.out.println("-> Trabajador 'JuanAdmin' creado con contraseña 'admin123' y datos completos.");
+                System.out.println("-> Trabajador 'Juan15' creado con exito y datos completos.");
             } else {
                 System.err.println("ERROR: No se pudo obtener el Rol ID para Administrador. No se creó el usuario Admin.");
             }
         } else {
-            System.out.println("-> Trabajador 'JuanAdmin' ya existe. Omitting initialization.");
+            System.out.println("-> Trabajador 'Juan15' ya existe. Omitting initialization.");
         }
     }
 }
