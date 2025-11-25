@@ -36,7 +36,6 @@ public class LibroDAOImpl implements  LibroDAO{
                             rs.getInt("CategoriaID"),
                             rs.getString("Idioma"),
                             rs.getString("UbicacionFisica"),
-                            rs.getString("RutaImagen"),
                             rs.getString("Estado"),
                             rs.getInt("Stock")
                     );
@@ -55,10 +54,15 @@ public class LibroDAOImpl implements  LibroDAO{
     @Override
     public List<Libro> obtenerTodos() {
         List<Libro> libros = new ArrayList<>();
-        String sql = "SELECT * FROM Libros";
+
+        // MODIFICACIÓN: Agregamos el JOIN con Categorias y seleccionamos el nombre
+        String sql = "SELECT l.*, c.Nombre AS NombreCategoria " +
+                "FROM Libros l " +
+                "JOIN Categorias c ON l.CategoriaID = c.CategoriaID";
+
         try (Statement stmt = conexion.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                // 1. Crea el objeto Libro
+                // Crea el objeto Libro (asegúrate de usar los argumentos correctos según tu constructor actual)
                 Libro libro = new Libro(
                         rs.getInt("LibroID"),
                         rs.getString("ISBN"),
@@ -68,12 +72,16 @@ public class LibroDAOImpl implements  LibroDAO{
                         rs.getInt("CategoriaID"),
                         rs.getString("Idioma"),
                         rs.getString("UbicacionFisica"),
-                        rs.getString("RutaImagen"),
                         rs.getString("Estado"),
                         rs.getInt("Stock")
                 );
-                // 2. Busca y asigna su lista de autores
+
+                //  Asignamos el nombre de la categoría recuperado del JOIN
+                libro.setCategoriaNombre(rs.getString("NombreCategoria"));
+
+                // Busca y asigna su lista de autores
                 libro.setAutores(obtenerAutoresParaLibro(libro.getLibroID()));
+
                 libros.add(libro);
             }
         } catch (SQLException e) {
@@ -85,7 +93,7 @@ public class LibroDAOImpl implements  LibroDAO{
     @Override
     public void insertar(Libro libro, List<Autor> autores) {
 
-        String sqlLibro = "INSERT INTO Libros (ISBN, Titulo, Editorial, AnioPublicacion, CategoriaID, Idioma, UbicacionFisica, RutaImagen, Estado, Stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlLibro = "INSERT INTO Libros (ISBN, Titulo, Editorial, AnioPublicacion, CategoriaID, Idioma, UbicacionFisica, Estado, Stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String sqlLibroAutor = "INSERT INTO LibroAutores (LibroID, AutorID, OrdenAutor) VALUES (?, ?, ?)";
 
         try {
@@ -101,9 +109,8 @@ public class LibroDAOImpl implements  LibroDAO{
                 stmtLibro.setInt(5, libro.getCategoriaID());
                 stmtLibro.setString(6, libro.getIdioma());
                 stmtLibro.setString(7, libro.getUbicacionFisica());
-                stmtLibro.setString(8, libro.getRutaImagen());
-                stmtLibro.setString(9, libro.getEstado());
-                stmtLibro.setInt(10, libro.getStock());
+                stmtLibro.setString(8, libro.getEstado());
+                stmtLibro.setInt(9, libro.getStock());
                 stmtLibro.executeUpdate();
 
                 try (ResultSet generatedKeys = stmtLibro.getGeneratedKeys()) {
@@ -143,7 +150,7 @@ public class LibroDAOImpl implements  LibroDAO{
     @Override
     public void actualizar(Libro libro, List<Autor> autores) {
         String sqlLibro = "UPDATE Libros SET ISBN = ?, Titulo = ?, Editorial = ?, AnioPublicacion = ?, " +
-                "CategoriaID = ?, Idioma = ?, UbicacionFisica = ?, RutaImagen = ?, " +
+                "CategoriaID = ?, Idioma = ?, UbicacionFisica = ?,  " +
                 "Estado = ?, Stock = ? WHERE LibroID = ?";
         String sqlDeleteRelaciones = "DELETE FROM LibroAutores WHERE LibroID = ?";
         String sqlInsertRelaciones = "INSERT INTO LibroAutores (LibroID, AutorID, OrdenAutor) VALUES (?, ?, ?)";
@@ -160,20 +167,19 @@ public class LibroDAOImpl implements  LibroDAO{
                 stmtLibro.setInt(5, libro.getCategoriaID());
                 stmtLibro.setString(6, libro.getIdioma());
                 stmtLibro.setString(7, libro.getUbicacionFisica());
-                stmtLibro.setString(8, libro.getRutaImagen());
-                stmtLibro.setString(9, libro.getEstado());
-                stmtLibro.setInt(10, libro.getStock());
-                stmtLibro.setInt(11, libro.getLibroID());
+                stmtLibro.setString(8, libro.getEstado());
+                stmtLibro.setInt(9, libro.getStock());
+                stmtLibro.setInt(10, libro.getLibroID());
                 stmtLibro.executeUpdate();
             }
 
-            // 2. Borrar todas las relaciones de autores existentes para este libro
+            //  Borrar todas las relaciones de autores existentes para este libro
             try (PreparedStatement stmtDelete = conexion.prepareStatement(sqlDeleteRelaciones)) {
                 stmtDelete.setInt(1, libro.getLibroID());
                 stmtDelete.executeUpdate();
             }
 
-            // 3. Insertar las nuevas relaciones
+            //  Insertar las nuevas relaciones
             try (PreparedStatement stmtInsert = conexion.prepareStatement(sqlInsertRelaciones)) {
                 // Y aplica el mismo bucle con índice
                 for (int i = 0; i < autores.size(); i++) {
@@ -204,13 +210,13 @@ public class LibroDAOImpl implements  LibroDAO{
         try {
             conexion.setAutoCommit(false);
 
-            // 1. Primero eliminar las relaciones en la tabla intermedia
+            // Primero eliminar las relaciones en la tabla intermedia
             try (PreparedStatement stmtRelaciones = conexion.prepareStatement(sqlDeleteRelaciones)) {
                 stmtRelaciones.setInt(1, id);
                 stmtRelaciones.executeUpdate();
             }
 
-            // 2. Luego eliminar el libro de la tabla principal
+            //  Luego eliminar el libro de la tabla principal
             try (PreparedStatement stmtLibro = conexion.prepareStatement(sqlDeleteLibro)) {
                 stmtLibro.setInt(1, id);
                 stmtLibro.executeUpdate();
@@ -243,7 +249,6 @@ public class LibroDAOImpl implements  LibroDAO{
                             rs.getInt("CategoriaID"),
                             rs.getString("Idioma"),
                             rs.getString("UbicacionFisica"),
-                            rs.getString("RutaImagen"),
                             rs.getString("Estado"),
                             rs.getInt("Stock")
                     );

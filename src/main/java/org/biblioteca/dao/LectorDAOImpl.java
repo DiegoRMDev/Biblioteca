@@ -27,10 +27,10 @@ public class LectorDAOImpl implements LectorDAO {
             stmt.setString(5, lector.getEmail());
             stmt.executeUpdate();
 
-            // 2. Recuperar la clave generada
+            //  Recuperar la clave generada
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    // 3. Asignar el ID generado de vuelta al objeto Lector
+                    //  Asignar el ID generado de vuelta al objeto Lector
                     lector.setLectorID(rs.getInt(1)); // ¡Esto corrige el error del ID=0!
                 }
             }

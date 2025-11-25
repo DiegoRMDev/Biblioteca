@@ -20,7 +20,7 @@ public class EditorLibro extends JDialog {
     private JTextField txtAnioPub;
     private JTextField txtIdioma;
     private JTextField txtUbFisc;
-    private JTextField txtRutImg;
+
     private JTextField txtStock;
     private JComboBox<Categoria> cboCategoria;
     private JList<Autor> lstAutores;
@@ -106,7 +106,7 @@ public class EditorLibro extends JDialog {
         txtAnioPub.setText(String.valueOf(libroAEditar.getAnioPublicacion()));
         txtIdioma.setText(libroAEditar.getIdioma());
         txtUbFisc.setText(libroAEditar.getUbicacionFisica());
-        txtRutImg.setText(libroAEditar.getRutaImagen());
+
 
 
 
@@ -143,7 +143,7 @@ public class EditorLibro extends JDialog {
         String anioPubStr = txtAnioPub.getText().trim();
         String idioma = txtIdioma.getText().trim();
         String ubicFisica = txtUbFisc.getText().trim();
-        String rutImg = txtRutImg.getText().trim();
+
         String stockStr = txtStock.getText().trim();
         String estado = (String) cboEstado.getSelectedItem();
 
@@ -209,7 +209,6 @@ public class EditorLibro extends JDialog {
             libro.setAnioPublicacion(anioPub); // Valida que no sea año futuro
             libro.setIdioma(idioma);
             libro.setUbicacionFisica(ubicFisica);
-            libro.setRutaImagen(rutImg);
             libro.setEstado(estado);
             libro.setStock(stock); // Valida que no sea negativo
             libro.setCategoriaID(categoriaSeleccionada.getCategoriaID());
@@ -233,7 +232,7 @@ public class EditorLibro extends JDialog {
 
             // Llamada al servicio (Valida ISBN duplicado)
             if (libroAEditar == null) {
-                // CAMBIO: Llamar al nuevo método con 4 argumentos
+                // CAMBIO: Llamar al nuevo met
                 libroService.registrarLibro(libro, autoresSeleccionados, idProv, donante);
                 JOptionPane.showMessageDialog(this, "Libro registrado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 

@@ -86,10 +86,9 @@ public class GestionLibro extends JPanel implements Actualizable {
                     autoresStr,
                     libro.getEditorial(),
                     libro.getAnioPublicacion(),
-                    libro.getCategoriaID(),
+                    libro.getCategoriaNombre(),
                     libro.getIdioma(),
                     libro.getUbicacionFisica(),
-                    libro.getRutaImagen(),
                     libro.getEstado(),
                     libro.getStock()
             });
@@ -134,7 +133,7 @@ public class GestionLibro extends JPanel implements Actualizable {
     private void createUIComponents() {
         modeloTabla = new DefaultTableModel(
                 new Object[]{"ID", "ISBN", "Título", "Autores", "Editorial", "AnioPubli",
-                        "Categoria", "Idioma", "Ubi. Fisica", "Ruta Img", "Estado", "Stock"}, 0) {
+                        "Categoria", "Idioma", "Ubi. Fisica", "Estado", "Stock"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
