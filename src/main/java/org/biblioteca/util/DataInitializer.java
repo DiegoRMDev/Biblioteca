@@ -57,7 +57,7 @@ public class DataInitializer {
     }
 
     private static void inicializarTrabajadorAdmin() {
-        System.out.println("Verificando Trabajador Administrador...");
+        System.out.println("Verificando Trabajador...");
 
         if (trabajadorService.obtenerTrabajadorPorUsuarioLogin("Juan15") == null) {
 
