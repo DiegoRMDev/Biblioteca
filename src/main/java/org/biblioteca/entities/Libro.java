@@ -13,7 +13,7 @@ public class Libro {
     private int categoriaID; // Clave foránea a Categorias
     private String idioma;
     private String ubicacionFisica;
-    private String rutaImagen;
+
     private String estado;
     private int stock;
 
@@ -24,7 +24,7 @@ public class Libro {
     }
 
     // Constructor para CARGAR datos desde la BD
-    public Libro(int libroID, String isbn, String titulo, String editorial, int anioPublicacion, int categoriaID, String idioma, String ubicacionFisica, String rutaImagen, String estado, int stock) {
+    public Libro(int libroID, String isbn, String titulo, String editorial, int anioPublicacion, int categoriaID, String idioma, String ubicacionFisica, String estado, int stock) {
         this.libroID = libroID;
         this.isbn = isbn;
         this.titulo = titulo;
@@ -33,13 +33,13 @@ public class Libro {
         this.categoriaID = categoriaID;
         this.idioma = idioma;
         this.ubicacionFisica = ubicacionFisica;
-        this.rutaImagen = rutaImagen;
+
         this.estado = estado;
         this.stock = stock;
     }
 
     // Constructor para REGISTRAR un nuevo libro (Debe usar setters para validar)
-    public Libro(String isbn, String titulo, String editorial, int anioPublicacion, int categoriaID, String idioma, String ubicacionFisica, String rutaImagen, String estado, int stock) {
+    public Libro(String isbn, String titulo, String editorial, int anioPublicacion, int categoriaID, String idioma, String ubicacionFisica,  String estado, int stock) {
         this.setIsbn(isbn);
         this.setTitulo(titulo);
         this.setEditorial(editorial);
@@ -47,7 +47,7 @@ public class Libro {
         this.setCategoriaID(categoriaID);
         this.setIdioma(idioma);
         this.setUbicacionFisica(ubicacionFisica);
-        this.setRutaImagen(rutaImagen);
+
         this.setEstado(estado);
         this.setStock(stock);
     }
@@ -205,20 +205,6 @@ public class Libro {
         }
     }
 
-    public String getRutaImagen() {
-        return rutaImagen;
-    }
-
-    /**
-     * Establece la Ruta de la Imagen.
-     */
-    public void setRutaImagen(String rutaImagen) {
-        // Validación básica de longitud, aunque las rutas pueden ser largas
-        if (rutaImagen != null && rutaImagen.trim().length() > 255) {
-            throw new IllegalArgumentException("La Ruta de Imagen no puede exceder los 255 caracteres.");
-        }
-        this.rutaImagen = (rutaImagen != null) ? rutaImagen.trim() : null;
-    }
 
     public String getEstado() {
         return estado;
@@ -270,6 +256,16 @@ public class Libro {
     public String toString() {
 
         return this.titulo;
+    }
+
+    private String categoriaNombre;
+
+    public String getCategoriaNombre() {
+        return categoriaNombre;
+    }
+
+    public void setCategoriaNombre(String categoriaNombre) {
+        this.categoriaNombre = categoriaNombre;
     }
 
 
